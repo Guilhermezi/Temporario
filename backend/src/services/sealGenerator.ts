@@ -11,18 +11,20 @@ export type SealData = {
   badgeImagePath?: string;
 };
 
+const sharpPromise = import("sharp").then((m) => m.default);
+
 export async function generateSealImage(data: SealData): Promise<{
   uniqueCode: string;
   imageUrl: string;
   shareableUrl: string;
 }> {
+  const sharp = await sharpPromise;
+
   const uniqueCode = uuidv4().slice(0, 8).toUpperCase();
   const filename = `seal-${uniqueCode}.png`;
   const outputDir = path.join(process.cwd(), "public", "seals");
 
   await fs.mkdir(outputDir, { recursive: true });
-
-  const sharp = (await import("sharp")).default;
 
   const photo = await sharp(data.userPhotoBuffer)
     .resize({ width: 1080, withoutEnlargement: true })
@@ -38,22 +40,8 @@ export async function generateSealImage(data: SealData): Promise<{
 <svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style>
-      @font-face {
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 400;
-        src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2') format('woff2');
-      }
-
-      @font-face {
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 800;
-        src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuDyfAZ9hiJ-Ek-_EeA.woff2') format('woff2');
-      }
-
       text {
-        font-family: 'Inter', Arial, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
       }
     </style>
 
@@ -94,7 +82,9 @@ export async function generateSealImage(data: SealData): Promise<{
   </text>
 </svg>`.trim();
 
-  const layers: any[] = [{ input: Buffer.from(overlay), blend: "over" }];
+  const layers: any[] = [
+    { input: Buffer.from(overlay), blend: "over" }
+  ];
 
   if (data.badgeImagePath) {
     try {
@@ -123,18 +113,16 @@ export async function generateSealImage(data: SealData): Promise<{
     }
   }
 
-  const filenameSafe = `seal-${uniqueCode}.png`;
-
   await sharp(photo)
     .composite(layers)
     .png()
-    .toFile(path.join(outputDir, filenameSafe));
+    .toFile(path.join(outputDir, filename));
 
   const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
   return {
     uniqueCode,
-    imageUrl: `${baseUrl}/seals/${filenameSafe}`,
+    imageUrl: `${baseUrl}/seals/${filename}`,
     shareableUrl: `${baseUrl}/seal/${uniqueCode}`,
   };
 }
