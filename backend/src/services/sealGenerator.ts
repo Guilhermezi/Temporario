@@ -8,22 +8,24 @@ export type SealData = {
   username: string;
   issuedAt: Date;
   userPhotoBuffer: Buffer;
-  badgeImagePath?: string; // caminho local do badge a exibir
+  badgeImagePath?: string;
 };
+
+const sharpPromise = import("sharp").then((m) => m.default);
 
 export async function generateSealImage(data: SealData): Promise<{
   uniqueCode: string;
   imageUrl: string;
   shareableUrl: string;
 }> {
+  const sharp = await sharpPromise;
+
   const uniqueCode = uuidv4().slice(0, 8).toUpperCase();
   const filename = `seal-${uniqueCode}.png`;
   const outputDir = path.join(process.cwd(), "public", "seals");
+
   await fs.mkdir(outputDir, { recursive: true });
 
-  const sharp = (await import("sharp")).default;
-
-  // Redimensiona a foto do usuário
   const photo = await sharp(data.userPhotoBuffer)
     .resize({ width: 1080, withoutEnlargement: true })
     .toBuffer();
@@ -32,62 +34,65 @@ export async function generateSealImage(data: SealData): Promise<{
   const W = meta.width!;
   const H = meta.height!;
 
-  const date = data.issuedAt.toLocaleDateString("pt-BR");
+  const date = data.issuedAt.toISOString().slice(0, 10);
 
-  // Gradiente + textos na parte de baixo (estilo Strava)
   const overlay = `
-<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg"
-     font-family="'Helvetica Neue', Arial, sans-serif">
+<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#000" stop-opacity="0"/>
-      <stop offset="40%"  stop-color="#000" stop-opacity="0.5"/>
+      <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="40%" stop-color="#000" stop-opacity="0.5"/>
       <stop offset="100%" stop-color="#000" stop-opacity="0.88"/>
     </linearGradient>
   </defs>
+
   <rect width="${W}" height="${H}" fill="url(#fade)"/>
 
-  <!-- Linha accent -->
   <rect x="0" y="${H - 200}" width="5" height="200" fill="#F59E0B"/>
 
-  <!-- Nome do produto -->
   <text x="30" y="${H - 140}"
         font-size="${Math.round(W * 0.058)}"
-        font-weight="800" fill="#FFFFFF" letter-spacing="-0.5">
+        font-weight="800"
+        fill="#FFFFFF">
     ${escapeXml(data.productName)}
   </text>
 
-  <!-- Marca -->
   <text x="30" y="${H - 98}"
         font-size="${Math.round(W * 0.034)}"
         fill="#D1D5DB">
     ${escapeXml(data.brandName)}
   </text>
 
-  <!-- Verificado por -->
   <text x="30" y="${H - 56}"
         font-size="${Math.round(W * 0.026)}"
         fill="#9CA3AF">
     Verificado por @${escapeXml(data.username)} · ${date}
   </text>
 
-  <!-- Código único -->
   <text x="30" y="${H - 24}"
         font-size="${Math.round(W * 0.02)}"
-        fill="#6B7280" letter-spacing="1">
+        fill="#6B7280">
     bytrust.com/selo/${uniqueCode}
   </text>
 </svg>`.trim();
 
-  const layers: any[] = [{ input: Buffer.from(overlay), blend: "over" }];
+  const layers: any[] = [
+    { input: Buffer.from(overlay), blend: "over" }
+  ];
 
-  // Badge no canto superior direito
   if (data.badgeImagePath) {
-    const badgeExists = await fs.access(data.badgeImagePath).then(() => true).catch(() => false);
-    if (badgeExists) {
-      const badgeSize = Math.round(W * 0.22); // 22% da largura da foto
+    try {
+      await fs.access(data.badgeImagePath);
+
+      const badgeSize = Math.round(W * 0.22);
+
       const badge = await sharp(data.badgeImagePath)
-        .resize({ width: badgeSize, height: badgeSize, fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+        .resize({
+          width: badgeSize,
+          height: badgeSize,
+          fit: "contain",
+          background: { r: 0, g: 0, b: 0, alpha: 0 }
+        })
         .png()
         .toBuffer();
 
@@ -97,6 +102,8 @@ export async function generateSealImage(data: SealData): Promise<{
         left: W - badgeSize - 20,
         blend: "over",
       });
+    } catch {
+      // ignora se não existir
     }
   }
 
@@ -106,9 +113,10 @@ export async function generateSealImage(data: SealData): Promise<{
     .toFile(path.join(outputDir, filename));
 
   const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
+
   return {
     uniqueCode,
-    imageUrl: `${baseUrl}/public/seals/${filename}`,
+    imageUrl: `${baseUrl}/seals/${filename}`,
     shareableUrl: `${baseUrl}/seal/${uniqueCode}`,
   };
 }
