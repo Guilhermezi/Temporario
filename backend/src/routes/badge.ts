@@ -1,4 +1,4 @@
-import { Router, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { prisma } from "../models/prisma";
 import { AuthenticatedRequest } from "../middleware/auth";
 
@@ -7,10 +7,11 @@ export const badgeRouter = Router();
 // GET /api/badges — insígnias do usuário logado
 badgeRouter.get(
   "/",
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req as AuthenticatedRequest;
     try {
       const userBadges = await prisma.userBadge.findMany({
-        where: { userId: req.userId },
+        where: { userId },
         include: { badge: true },
         orderBy: { earnedAt: "desc" },
       });
@@ -24,7 +25,7 @@ badgeRouter.get(
 // GET /api/badges/all — catálogo completo de insígnias
 badgeRouter.get(
   "/all",
-  async (_req, res: Response, next: NextFunction) => {
+  async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const badges = await prisma.badge.findMany({ orderBy: { name: "asc" } });
       res.json(badges);

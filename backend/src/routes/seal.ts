@@ -1,4 +1,4 @@
-import { Router, Response, NextFunction, Request } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { prisma } from "../models/prisma";
 import { AppError } from "../middleware/errorHandler";
 import { authMiddleware, AuthenticatedRequest } from "../middleware/auth";
@@ -9,10 +9,11 @@ export const sealRouter = Router();
 sealRouter.get(
   "/",
   authMiddleware,
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req as AuthenticatedRequest;
     try {
       const seals = await prisma.seal.findMany({
-        where: { userId: req.userId },
+        where: { userId },
         include: {
           verification: { include: { product: { include: { brand: true } } } },
         },

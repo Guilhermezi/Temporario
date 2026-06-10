@@ -1,7 +1,8 @@
-import { Router, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import path from "path";
 import multer from "multer";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../models/prisma";
 import { AppError } from "../middleware/errorHandler";
 import { AuthenticatedRequest } from "../middleware/auth";
@@ -66,10 +67,9 @@ async function getLatestUserBadgePath(userId: string): Promise<string | undefine
 verificationRouter.post(
   "/",
   upload.single("photo"),
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req as AuthenticatedRequest;
     try {
-      const userId = req.userId;
-
       if (!req.file) {
         throw new AppError(400, "Envie uma foto do produto no campo 'photo'");
       }
@@ -106,7 +106,7 @@ verificationRouter.post(
           authCode: body.authCode,
           sourceType: body.sourceType,
           status,
-          rawResponse: validationResult.rawResponse,
+          rawResponse: validationResult.rawResponse as Prisma.InputJsonValue,
         },
       });
 
@@ -198,10 +198,11 @@ verificationRouter.post(
 // GET /api/verifications
 verificationRouter.get(
   "/",
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req as AuthenticatedRequest;
     try {
       const verifications = await prisma.productVerification.findMany({
-        where: { userId: req.userId },
+        where: { userId },
         include: { product: { include: { brand: true } }, seal: true },
         orderBy: { createdAt: "desc" },
         take: 20,
@@ -216,10 +217,11 @@ verificationRouter.get(
 // GET /api/verifications/:id
 verificationRouter.get(
   "/:id",
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req as AuthenticatedRequest;
     try {
       const verification = await prisma.productVerification.findFirst({
-        where: { id: req.params.id, userId: req.userId },
+        where: { id: req.params.id, userId },
         include: { product: { include: { brand: true } }, seal: true },
       });
       if (!verification) throw new AppError(404, "Verificação não encontrada");

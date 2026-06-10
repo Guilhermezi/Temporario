@@ -1,4 +1,4 @@
-import { Router, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../models/prisma";
 import { AppError } from "../middleware/errorHandler";
@@ -14,7 +14,7 @@ const PostSchema = z.object({
 // GET /api/community — feed geral (paginado)
 communityRouter.get(
   "/",
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = Math.max(1, Number(req.query.page ?? 1));
       const limit = 20;
@@ -40,13 +40,14 @@ communityRouter.get(
 // POST /api/community — post manual do usuário
 communityRouter.post(
   "/",
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req as AuthenticatedRequest;
     try {
       const body = PostSchema.parse(req.body);
 
       const post = await prisma.communityPost.create({
         data: {
-          userId: req.userId,
+          userId,
           content: body.content,
           imageUrl: body.imageUrl,
           isAuto: false,
@@ -66,10 +67,11 @@ communityRouter.post(
 // DELETE /api/community/:id — o próprio usuário pode deletar seu post
 communityRouter.delete(
   "/:id",
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req as AuthenticatedRequest;
     try {
       const post = await prisma.communityPost.findFirst({
-        where: { id: req.params.id, userId: req.userId },
+        where: { id: req.params.id, userId },
       });
 
       if (!post) throw new AppError(404, "Post não encontrado");
