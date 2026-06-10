@@ -11,20 +11,18 @@ export type SealData = {
   badgeImagePath?: string;
 };
 
-const sharpPromise = import("sharp").then((m) => m.default);
-
 export async function generateSealImage(data: SealData): Promise<{
   uniqueCode: string;
   imageUrl: string;
   shareableUrl: string;
 }> {
-  const sharp = await sharpPromise;
-
   const uniqueCode = uuidv4().slice(0, 8).toUpperCase();
   const filename = `seal-${uniqueCode}.png`;
   const outputDir = path.join(process.cwd(), "public", "seals");
 
   await fs.mkdir(outputDir, { recursive: true });
+
+  const sharp = (await import("sharp")).default;
 
   const photo = await sharp(data.userPhotoBuffer)
     .resize({ width: 1080, withoutEnlargement: true })
@@ -39,6 +37,26 @@ export async function generateSealImage(data: SealData): Promise<{
   const overlay = `
 <svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
   <defs>
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2') format('woff2');
+      }
+
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 800;
+        src: url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuDyfAZ9hiJ-Ek-_EeA.woff2') format('woff2');
+      }
+
+      text {
+        font-family: 'Inter', Arial, sans-serif;
+      }
+    </style>
+
     <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#000" stop-opacity="0"/>
       <stop offset="40%" stop-color="#000" stop-opacity="0.5"/>
@@ -76,9 +94,7 @@ export async function generateSealImage(data: SealData): Promise<{
   </text>
 </svg>`.trim();
 
-  const layers: any[] = [
-    { input: Buffer.from(overlay), blend: "over" }
-  ];
+  const layers: any[] = [{ input: Buffer.from(overlay), blend: "over" }];
 
   if (data.badgeImagePath) {
     try {
@@ -103,20 +119,22 @@ export async function generateSealImage(data: SealData): Promise<{
         blend: "over",
       });
     } catch {
-      // ignora se não existir
+      // ignora badge inválido
     }
   }
+
+  const filenameSafe = `seal-${uniqueCode}.png`;
 
   await sharp(photo)
     .composite(layers)
     .png()
-    .toFile(path.join(outputDir, filename));
+    .toFile(path.join(outputDir, filenameSafe));
 
   const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
   return {
     uniqueCode,
-    imageUrl: `${baseUrl}/seals/${filename}`,
+    imageUrl: `${baseUrl}/seals/${filenameSafe}`,
     shareableUrl: `${baseUrl}/seal/${uniqueCode}`,
   };
 }
