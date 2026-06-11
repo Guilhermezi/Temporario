@@ -70,7 +70,7 @@ export async function generateSealImage(
   <text
     x="30"
     y="${H - 140}"
-    font-family="Arial"
+    font-family="DejaVu Sans, Arial, sans-serif"
     font-size="${Math.round(W * 0.058)}"
     font-weight="800"
     fill="#FFFFFF">
@@ -80,7 +80,7 @@ export async function generateSealImage(
   <text
     x="30"
     y="${H - 98}"
-    font-family="Arial"
+    font-family="DejaVu Sans, Arial, sans-serif"
     font-size="${Math.round(W * 0.034)}"
     fill="#D1D5DB">
     ${escapeXml(data.brandName)}
@@ -89,7 +89,7 @@ export async function generateSealImage(
   <text
     x="30"
     y="${H - 56}"
-    font-family="Arial"
+    font-family="DejaVu Sans, Arial, sans-serif"
     font-size="${Math.round(W * 0.026)}"
     fill="#9CA3AF">
     Verificado por @${escapeXml(data.username)} - ${date}
@@ -98,7 +98,7 @@ export async function generateSealImage(
   <text
     x="30"
     y="${H - 24}"
-    font-family="Arial"
+    font-family="DejaVu Sans, Arial, sans-serif"
     font-size="${Math.round(W * 0.020)}"
     fill="#6B7280">
     bytrust.com/selo/${uniqueCode}
