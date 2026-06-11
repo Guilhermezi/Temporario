@@ -149,8 +149,8 @@ export async function generateSealImage(
 
   return {
     uniqueCode,
-    imageUrl: `${baseUrl}public/seals/${filename}`,
-    shareableUrl: `${baseUrl}api/seals/public/${uniqueCode}`,
+    imageUrl: `${baseUrl}/public/seals/${filename}`,
+    shareableUrl: `${baseUrl}/api/seals/public/${uniqueCode}`,
   };
 }
 
