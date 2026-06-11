@@ -13,7 +13,9 @@ export type SealData = {
 
 const sharpPromise = import("sharp").then((m) => m.default);
 
-export async function generateSealImage(data: SealData): Promise<{
+export async function generateSealImage(
+  data: SealData
+): Promise<{
   uniqueCode: string;
   imageUrl: string;
   shareableUrl: string;
@@ -22,29 +24,29 @@ export async function generateSealImage(data: SealData): Promise<{
 
   const uniqueCode = uuidv4().slice(0, 8).toUpperCase();
   const filename = `seal-${uniqueCode}.png`;
+
   const outputDir = path.join(process.cwd(), "public", "seals");
 
   await fs.mkdir(outputDir, { recursive: true });
 
   const photo = await sharp(data.userPhotoBuffer)
-    .resize({ width: 1080, withoutEnlargement: true })
+    .resize({
+      width: 1080,
+      withoutEnlargement: true,
+    })
     .toBuffer();
 
   const meta = await sharp(photo).metadata();
+
   const W = meta.width!;
   const H = meta.height!;
 
-  const date = data.issuedAt.toISOString().slice(0, 10);
+  const date = new Date(data.issuedAt).toLocaleDateString("pt-BR");
 
   const overlay = `
 <svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <style>
-      text {
-        font-family: Arial, Helvetica, sans-serif;
-      }
-    </style>
 
+  <defs>
     <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#000" stop-opacity="0"/>
       <stop offset="40%" stop-color="#000" stop-opacity="0.5"/>
@@ -54,36 +56,59 @@ export async function generateSealImage(data: SealData): Promise<{
 
   <rect width="${W}" height="${H}" fill="url(#fade)"/>
 
-  <rect x="0" y="${H - 200}" width="5" height="200" fill="#F59E0B"/>
+  <rect
+    x="0"
+    y="${H - 200}"
+    width="5"
+    height="200"
+    fill="#F59E0B"
+  />
 
-  <text x="30" y="${H - 140}"
-        font-size="${Math.round(W * 0.058)}"
-        font-weight="800"
-        fill="#FFFFFF">
+  <text
+    x="30"
+    y="${H - 140}"
+    font-family="Arial"
+    font-size="${Math.round(W * 0.058)}"
+    font-weight="800"
+    fill="#FFFFFF">
     ${escapeXml(data.productName)}
   </text>
 
-  <text x="30" y="${H - 98}"
-        font-size="${Math.round(W * 0.034)}"
-        fill="#D1D5DB">
+  <text
+    x="30"
+    y="${H - 98}"
+    font-family="Arial"
+    font-size="${Math.round(W * 0.034)}"
+    fill="#D1D5DB">
     ${escapeXml(data.brandName)}
   </text>
 
-  <text x="30" y="${H - 56}"
-        font-size="${Math.round(W * 0.026)}"
-        fill="#9CA3AF">
-    Verificado por @${escapeXml(data.username)} · ${date}
+  <text
+    x="30"
+    y="${H - 56}"
+    font-family="Arial"
+    font-size="${Math.round(W * 0.026)}"
+    fill="#9CA3AF">
+    Verificado por @${escapeXml(data.username)} - ${date}
   </text>
 
-  <text x="30" y="${H - 24}"
-        font-size="${Math.round(W * 0.02)}"
-        fill="#6B7280">
+  <text
+    x="30"
+    y="${H - 24}"
+    font-family="Arial"
+    font-size="${Math.round(W * 0.020)}"
+    fill="#6B7280">
     bytrust.com/selo/${uniqueCode}
   </text>
-</svg>`.trim();
+
+</svg>
+`.trim();
 
   const layers: any[] = [
-    { input: Buffer.from(overlay), blend: "over" }
+    {
+      input: Buffer.from(overlay, "utf-8"),
+      blend: "over",
+    },
   ];
 
   if (data.badgeImagePath) {
@@ -97,7 +122,12 @@ export async function generateSealImage(data: SealData): Promise<{
           width: badgeSize,
           height: badgeSize,
           fit: "contain",
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
+          background: {
+            r: 0,
+            g: 0,
+            b: 0,
+            alpha: 0,
+          },
         })
         .png()
         .toBuffer();
@@ -109,7 +139,7 @@ export async function generateSealImage(data: SealData): Promise<{
         blend: "over",
       });
     } catch {
-      // ignora badge inválido
+      console.warn("Badge não encontrado.");
     }
   }
 
@@ -132,5 +162,6 @@ function escapeXml(str: string): string {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
