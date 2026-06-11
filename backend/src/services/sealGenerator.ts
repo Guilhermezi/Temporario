@@ -2,6 +2,12 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import fs from "fs/promises";
 
+const fontsDir = path.resolve(process.cwd(), "fonts");
+const fontsConf = path.join(fontsDir, "fonts.conf");
+
+process.env.FONTCONFIG_PATH = fontsDir;
+process.env.FONTCONFIG_FILE = fontsConf;
+
 export type SealData = {
   productName: string;
   brandName: string;
@@ -25,11 +31,7 @@ export async function generateSealImage(
   const uniqueCode = uuidv4().slice(0, 8).toUpperCase();
   const filename = `seal-${uniqueCode}.png`;
 
-  const outputDir = path.resolve(
-  __dirname,
-  "../../public/seals"
-);
-
+  const outputDir = path.resolve(__dirname, "../../public/seals");
   await fs.mkdir(outputDir, { recursive: true });
 
   const photo = await sharp(data.userPhotoBuffer)
@@ -40,7 +42,6 @@ export async function generateSealImage(
     .toBuffer();
 
   const meta = await sharp(photo).metadata();
-
   const W = meta.width!;
   const H = meta.height!;
 
@@ -48,7 +49,6 @@ export async function generateSealImage(
 
   const overlay = `
 <svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-
   <defs>
     <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#000" stop-opacity="0"/>
@@ -70,7 +70,7 @@ export async function generateSealImage(
   <text
     x="30"
     y="${H - 140}"
-    font-family="DejaVu Sans, Arial, sans-serif"
+    font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.058)}"
     font-weight="800"
     fill="#FFFFFF">
@@ -80,7 +80,7 @@ export async function generateSealImage(
   <text
     x="30"
     y="${H - 98}"
-    font-family="DejaVu Sans, Arial, sans-serif"
+    font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.034)}"
     fill="#D1D5DB">
     ${escapeXml(data.brandName)}
@@ -89,7 +89,7 @@ export async function generateSealImage(
   <text
     x="30"
     y="${H - 56}"
-    font-family="DejaVu Sans, Arial, sans-serif"
+    font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.026)}"
     fill="#9CA3AF">
     Verificado por @${escapeXml(data.username)} - ${date}
@@ -98,12 +98,11 @@ export async function generateSealImage(
   <text
     x="30"
     y="${H - 24}"
-    font-family="DejaVu Sans, Arial, sans-serif"
+    font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.020)}"
     fill="#6B7280">
     bytrust.com/selo/${uniqueCode}
   </text>
-
 </svg>
 `.trim();
 
@@ -125,12 +124,7 @@ export async function generateSealImage(
           width: badgeSize,
           height: badgeSize,
           fit: "contain",
-          background: {
-            r: 0,
-            g: 0,
-            b: 0,
-            alpha: 0,
-          },
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
         })
         .png()
         .toBuffer();
@@ -154,10 +148,10 @@ export async function generateSealImage(
   const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
   return {
-  uniqueCode,
-  imageUrl: `${baseUrl}/public/seals/${filename}`,
-  shareableUrl: `${baseUrl}/api/seals/public/${uniqueCode}`,
-};
+    uniqueCode,
+    imageUrl: `${baseUrl}/seals/${filename}`,
+    shareableUrl: `${baseUrl}/api/seals/public/${uniqueCode}`,
+  };
 }
 
 function escapeXml(str: string): string {
