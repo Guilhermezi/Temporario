@@ -74,7 +74,7 @@ export async function generateSealImage(
     y="${H - 140}"
     font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.058)}"
-    font-weight="700"
+    font-weight="500"
     fill="#FFFFFF">
     ${escapeXml(data.productName)}
   </text>
