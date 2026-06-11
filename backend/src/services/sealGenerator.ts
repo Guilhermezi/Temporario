@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import fs from "fs/promises";
 
-const fontsDir = path.resolve(process.cwd(), "assets", "fonts");
+const fontsDir = path.resolve(__dirname, "../../assets/fonts");
 const fontsConf = path.join(fontsDir, "fonts.conf");
 const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
@@ -72,7 +72,7 @@ export async function generateSealImage(
   <text
     x="30"
     y="${H - 140}"
-    font-family="DejaVu Sans"
+    font-family="ARIAL"
     font-size="${Math.round(W * 0.058)}"
     font-weight="500"
     fill="#FFFFFF">
