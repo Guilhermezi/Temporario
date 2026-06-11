@@ -4,6 +4,7 @@ import fs from "fs/promises";
 
 const fontsDir = path.resolve(process.cwd(), "fonts");
 const fontsConf = path.join(fontsDir, "fonts.conf");
+const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
 process.env.FONTCONFIG_PATH = fontsDir;
 process.env.FONTCONFIG_FILE = fontsConf;
@@ -48,6 +49,7 @@ export async function generateSealImage(
   const date = new Date(data.issuedAt).toLocaleDateString("pt-BR");
 
   const overlay = `
+<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
@@ -74,7 +76,7 @@ export async function generateSealImage(
     font-size="${Math.round(W * 0.058)}"
     font-weight="800"
     fill="#FFFFFF">
-    ${escapeXml(data.productName)}
+    ${escapeXml(data.productName)} - Verificado
   </text>
 
   <text
@@ -83,7 +85,7 @@ export async function generateSealImage(
     font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.034)}"
     fill="#D1D5DB">
-    ${escapeXml(data.brandName)}
+    ${escapeXml(data.brandName)} - Selo de Integridade
   </text>
 
   <text
@@ -92,7 +94,7 @@ export async function generateSealImage(
     font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.026)}"
     fill="#9CA3AF">
-    Verificado por @${escapeXml(data.username)} - ${date}
+    Verificado por @${escapeXml(data.username)} - ${date} - Código: ${uniqueCode}
   </text>
 
   <text
@@ -101,7 +103,7 @@ export async function generateSealImage(
     font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.020)}"
     fill="#6B7280">
-    bytrust.com/selo/${uniqueCode}
+    ${baseUrl}/api/seals/public/${uniqueCode} - Compartilhe seu selo de integridade!
   </text>
 </svg>
 `.trim();
@@ -145,7 +147,6 @@ export async function generateSealImage(
     .png()
     .toFile(path.join(outputDir, filename));
 
-  const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
   return {
     uniqueCode,
