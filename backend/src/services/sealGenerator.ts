@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import fs from "fs/promises";
 
-const fontsDir = path.resolve(process.cwd(), "fonts");
+const fontsDir = path.resolve(process.cwd(), "assets", "fonts");
 const fontsConf = path.join(fontsDir, "fonts.conf");
 const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
@@ -74,9 +74,9 @@ export async function generateSealImage(
     y="${H - 140}"
     font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.058)}"
-    font-weight="800"
+    font-weight="700"
     fill="#FFFFFF">
-    ${escapeXml(data.productName)} - Verificado
+    ${escapeXml(data.productName)}
   </text>
 
   <text
@@ -85,7 +85,7 @@ export async function generateSealImage(
     font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.034)}"
     fill="#D1D5DB">
-    ${escapeXml(data.brandName)} - Selo de Integridade
+    ${escapeXml(data.brandName)}
   </text>
 
   <text
@@ -94,7 +94,7 @@ export async function generateSealImage(
     font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.026)}"
     fill="#9CA3AF">
-    Verificado por @${escapeXml(data.username)} - ${date} - Código: ${uniqueCode}
+    Verificado por @${escapeXml(data.username)} - ${date}
   </text>
 
   <text
@@ -103,7 +103,7 @@ export async function generateSealImage(
     font-family="DejaVu Sans"
     font-size="${Math.round(W * 0.020)}"
     fill="#6B7280">
-    ${baseUrl}/api/seals/public/${uniqueCode} - Compartilhe seu selo de integridade!
+    ${baseUrl}/api/seals/public/${uniqueCode}
   </text>
 </svg>
 `.trim();
