@@ -25,7 +25,10 @@ export async function generateSealImage(
   const uniqueCode = uuidv4().slice(0, 8).toUpperCase();
   const filename = `seal-${uniqueCode}.png`;
 
-  const outputDir = path.join(process.cwd(), "public", "seals");
+  const outputDir = path.resolve(
+  __dirname,
+  "../../public/seals"
+);
 
   await fs.mkdir(outputDir, { recursive: true });
 
@@ -151,10 +154,10 @@ export async function generateSealImage(
   const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
   return {
-    uniqueCode,
-    imageUrl: `${baseUrl}/seals/${filename}`,
-    shareableUrl: `${baseUrl}/seal/${uniqueCode}`,
-  };
+  uniqueCode,
+  imageUrl: `${baseUrl}/public/seals/${filename}`,
+  shareableUrl: `${baseUrl}/api/seals/public/${uniqueCode}`,
+};
 }
 
 function escapeXml(str: string): string {
