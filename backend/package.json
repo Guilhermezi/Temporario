@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "npx prisma migrate deploy && node dist/index.js",
+    "start": "node dist/index.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"
@@ -25,6 +25,7 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.1.1",
+    "rss-parser": "^3.13.0",
     "sharp": "^0.33.2",
     "uuid": "^9.0.0",
     "zod": "^3.22.4"
@@ -36,6 +37,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^2.1.0",
     "@types/node": "^20.11.5",
+    "@types/rss-parser": "^3.13.4",
     "@types/uuid": "^9.0.7",
     "prisma": "^5.10.0",
     "ts-node-dev": "^2.0.0",
