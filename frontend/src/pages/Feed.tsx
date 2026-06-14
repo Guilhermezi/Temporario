@@ -44,6 +44,13 @@ function parseNewsPost(content: string) {
   };
 }
 
+function isNewsPost(post: Post) {
+  return (
+    post.isAuto &&
+    (post.content.includes("📰") || post.content.includes("🔗 Fonte:"))
+  );
+}
+
 function PostImage({ src, alt }: { src: string; alt: string }) {
   return (
     <img
@@ -144,7 +151,10 @@ function NewsCard({
       </div>
 
       {post.imageUrl && (
-        <PostImage src={post.imageUrl} alt={news.title || "Imagem da publicação"} />
+        <PostImage
+          src={post.imageUrl}
+          alt={news.title || "Imagem da publicação"}
+        />
       )}
     </div>
   );
@@ -321,7 +331,7 @@ export default function Feed() {
           {posts.map((p) => {
             const canDelete = user?.username === p.user.username;
 
-            return p.isAuto ? (
+            return isNewsPost(p) ? (
               <NewsCard
                 key={p.id}
                 post={p}
