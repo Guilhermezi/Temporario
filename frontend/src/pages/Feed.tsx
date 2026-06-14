@@ -1,7 +1,116 @@
 import { useState, useEffect } from "react";
-import { Loader2, Send, Trash2, ShieldCheck } from "lucide-react";
+import {
+  Loader2,
+  Send,
+  Trash2,
+  ShieldCheck,
+  Newspaper,
+  ExternalLink,
+} from "lucide-react";
 import { api, type Post } from "../lib/api";
 import { useAuth } from "../hooks/useAuth";
+
+function parseNewsPost(content: string) {
+  const lines = content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const rawTitle = lines.find((line) => line.startsWith("📰")) || "";
+  const dateLine = lines.find((line) => line.startsWith("📅")) || "";
+  const sourceLine = lines.find((line) => line.startsWith("🔗 Fonte:")) || "";
+  const urlLine = lines.find((line) => /^https?:\/\//i.test(line)) || "";
+
+  const title = rawTitle.replace(/^📰\s*/, "").trim();
+  const date = dateLine.replace(/^📅\s*/, "").trim();
+  const source = sourceLine.replace(/^🔗 Fonte:\s*/, "").trim();
+
+  const bodyLines = lines.filter(
+    (line) =>
+      !line.startsWith("📰") &&
+      !line.startsWith("📅") &&
+      !line.startsWith("🔗 Fonte:") &&
+      !/^https?:\/\//i.test(line)
+  );
+
+  const description = bodyLines.join(" ").trim();
+
+  return {
+    title,
+    date,
+    source,
+    url: urlLine,
+    description,
+  };
+}
+
+function NewsCard({ post }: { post: Post }) {
+  const news = parseNewsPost(post.content);
+
+  return (
+    <div className="rounded-2xl border border-ink-200 bg-gradient-to-br from-cream-50 to-cream-100/70 p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/20 grid place-items-center text-gold-600 shrink-0">
+            <Newspaper size={16} />
+          </div>
+
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-sm font-semibold text-ink-900 truncate">
+                {post.user.displayName ?? post.user.username}
+              </p>
+              <span className="tag-green">
+                <ShieldCheck size={10} /> verificado
+              </span>
+            </div>
+
+            <div className="text-xs text-ink-400 mt-1">
+              {news.date || new Date(post.createdAt).toLocaleDateString("pt-BR")}
+              {news.source ? ` • ${news.source}` : ""}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-ink-150 bg-white/70 p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-600">
+            Notícias
+          </span>
+        </div>
+
+        <h3 className="text-lg font-semibold leading-snug text-ink-900">
+          {news.title || "Notícia publicada"}
+        </h3>
+
+        {news.description && (
+          <p className="mt-3 text-sm leading-6 text-ink-700 whitespace-pre-wrap break-words wrap-anywhere">
+            {news.description}
+          </p>
+        )}
+
+        <div className="mt-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="text-xs text-ink-400">
+            Publicado em {new Date(post.createdAt).toLocaleDateString("pt-BR")}
+          </div>
+
+          {news.url && (
+            <a
+              href={news.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-cream-50 transition hover:bg-ink-800"
+            >
+              Ler matéria
+              <ExternalLink size={14} />
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Feed() {
   const { user } = useAuth();
@@ -20,11 +129,15 @@ export default function Feed() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const submit = async () => {
     if (!text.trim()) return;
-    setPostErr(""); setPosting(true);
+    setPostErr("");
+    setPosting(true);
+
     try {
       const p = await api.community.post(text.trim());
       setPosts((x) => [p, ...x]);
@@ -47,29 +160,34 @@ export default function Feed() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-28 pb-20 fade-up">
-      {/* Header */}
       <div className="mb-10">
         <p className="section-label mb-2">Comunidade</p>
         <h1 className="font-serif font-black text-5xl text-ink-900">Feed</h1>
-        <p className="text-ink-500 mt-2 text-sm">Compartilhe e inspire outras pessoas a consumir com consciência.</p>
+        <p className="text-ink-500 mt-2 text-sm">
+          Compartilhe e inspire outras pessoas a consumir com consciência.
+        </p>
       </div>
 
-      {/* Compose */}
       {user && (
         <div className="card mb-8">
           <div className="flex gap-3">
             <div className="w-9 h-9 rounded-full bg-gold-500/10 border border-gold-500/20 grid place-items-center text-sm font-bold text-gold-600 shrink-0">
               {(user.displayName ?? user.username)[0].toUpperCase()}
             </div>
+
             <div className="flex-1">
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Compartilhe sua experiência com produtos originais..."
                 className="w-full bg-transparent resize-none text-sm text-ink-900 placeholder-ink-400 focus:outline-none min-h-20 leading-relaxed"
-                onKeyDown={(e) => { if (e.key === "Enter" && e.metaKey) submit(); }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && e.metaKey) submit();
+                }}
               />
+
               {postErr && <p className="text-xs text-red-600 mt-1">{postErr}</p>}
+
               <div className="flex items-center justify-between mt-3 pt-3 border-t border-ink-100">
                 <span className="text-xs text-ink-400">⌘ + Enter para publicar</span>
                 <button
@@ -77,7 +195,11 @@ export default function Feed() {
                   disabled={posting || !text.trim()}
                   className="btn-primary text-sm py-2 px-5"
                 >
-                  {posting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                  {posting ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Send size={14} />
+                  )}
                   Publicar
                 </button>
               </div>
@@ -86,7 +208,6 @@ export default function Feed() {
         </div>
       )}
 
-      {/* Posts */}
       {loading ? (
         <div className="flex justify-center py-20">
           <Loader2 size={24} className="animate-spin text-ink-400" />
@@ -95,56 +216,60 @@ export default function Feed() {
         <div className="text-center py-20 text-red-600">{loadErr}</div>
       ) : posts.length === 0 ? (
         <div className="text-center py-20 text-ink-400">
-          <p className="font-serif text-xl font-bold text-ink-700 mb-2">Nenhuma publicação ainda.</p>
+          <p className="font-serif text-xl font-bold text-ink-700 mb-2">
+            Nenhuma publicação ainda.
+          </p>
           <p className="text-sm">Seja o primeiro a compartilhar!</p>
         </div>
       ) : (
         <div className="space-y-4">
           {posts.map((p) => (
-            <div key={p.id} className="card hover:border-ink-300 transition-colors">
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-gold-500/10 border border-gold-500/20 grid place-items-center text-sm font-bold text-gold-600 shrink-0">
-                    {(p.user.displayName ?? p.user.username)[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-ink-900">
-                      {p.user.displayName ?? p.user.username}
+            <div key={p.id}>
+              {p.isAuto ? (
+                <NewsCard post={p} />
+              ) : (
+                <div className="card hover:border-ink-300 transition-colors">
+                  <div className="flex items-start justify-between gap-3 mb-4 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="w-9 h-9 rounded-full bg-gold-500/10 border border-gold-500/20 grid place-items-center text-sm font-bold text-gold-600 shrink-0">
+                        {(p.user.displayName ?? p.user.username)[0].toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-ink-900">
+                          {p.user.displayName ?? p.user.username}
+                        </div>
+                        <div className="text-xs text-ink-400">
+                          {new Date(p.createdAt).toLocaleDateString("pt-BR")}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-xs text-ink-400">
-                      {new Date(p.createdAt).toLocaleDateString("pt-BR")}
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {user?.username === p.user.username && (
+                        <button
+                          onClick={() => del(p.id)}
+                          className="text-ink-300 hover:text-red-500 transition-colors p-1"
+                          aria-label="Deletar post"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {p.isAuto && (
-                    <span className="tag-green">
-                      <ShieldCheck size={10} /> verificado
-                    </span>
-                  )}
-                  {user?.username === p.user.username && (
-                    <button
-                      onClick={() => del(p.id)}
-                      className="text-ink-300 hover:text-red-500 transition-colors p-1"
-                      aria-label="Deletar post"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+
+                  <p className="text-sm text-ink-700 leading-relaxed mb-4 whitespace-pre-wrap break-words wrap-anywhere">
+                    {p.content}
+                  </p>
+
+                  {p.imageUrl && (
+                    <img
+                      src={p.imageUrl}
+                      alt="Selo"
+                      className="w-full rounded-xl border border-ink-200"
+                      onError={(e) => (e.currentTarget.style.display = "none")}
+                    />
                   )}
                 </div>
-              </div>
-
-              <p className="text-sm text-ink-700 leading-relaxed mb-4 whitespace-pre-wrap break-words wrap-anywhere">
-                {p.content}
-              </p>
-
-              {p.imageUrl && (
-                <img
-                  src={p.imageUrl}
-                  alt="Selo"
-                  className="w-full rounded-xl border border-ink-200"
-                  onError={(e) => (e.currentTarget.style.display = "none")}
-                />
               )}
             </div>
           ))}
