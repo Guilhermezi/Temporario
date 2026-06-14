@@ -134,7 +134,9 @@ export default function Feed() {
                 </div>
               </div>
 
-              <p className="text-sm text-ink-700 leading-relaxed mb-4">{p.content}</p>
+              <p className="text-sm text-ink-700 leading-relaxed mb-4 whitespace-pre-wrap break-words wrap-anywhere">
+                {p.content}
+              </p>
 
               {p.imageUrl && (
                 <img
