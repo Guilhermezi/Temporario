@@ -3,6 +3,7 @@
 
 const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
+
 async function post<T>(path: string, body: unknown): Promise<T> {
   let res: Response;
   try {
