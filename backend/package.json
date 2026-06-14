@@ -37,7 +37,6 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^2.1.0",
     "@types/node": "^20.11.5",
-    "@types/rss-parser": "^3.13.4",
     "@types/uuid": "^9.0.7",
     "prisma": "^5.10.0",
     "ts-node-dev": "^2.0.0",
