@@ -21,13 +21,30 @@ export default function Navbar() {
         {/* Logo */}
         <button
           onClick={() => navigate("/")}
-          className="flex items-center gap-2.5 group"
+          className="flex items-center gap-3 group"
         >
-          <div className="w-8 h-8 rounded-full bg-ink-900 flex items-center justify-center">
-            <ShieldCheck size={16} className="text-cream-100" />
-          </div>
-
-          <span className="font-serif font-bold text-lg text-ink-900 leading-none">
+          {/* Lupa com checkmark */}
+          <svg
+            width="36"
+            height="36"
+            viewBox="0 0 48 48"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="20" cy="20" r="14" stroke="#1a1a1a" strokeWidth="3.5" />
+            <line x1="30" y1="30" x2="42" y2="42" stroke="#1a1a1a" strokeWidth="3.5" strokeLinecap="round" />
+            <polyline
+              points="12,20 18,26 29,13"
+              fill="none"
+              stroke="#B8922A"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          
+          {/* Texto byTrust. */}
+          <span className="font-serif font-bold text-2xl text-ink-900 leading-none">
             by
             <em className="not-italic text-gold-500">Trust</em>
             <span className="text-gold-500">.</span>
