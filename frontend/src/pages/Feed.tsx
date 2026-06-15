@@ -122,27 +122,25 @@ function NewsCard({
         <div className="flex items-center justify-between px-5 py-3 border-t border-ink-50 bg-cream-50/60">
           {source && (
             <span className="text-xs text-ink-400 font-medium truncate max-w-[60%]">
-              {c.source}: <span className="text-ink-600">{source}</span>
-            </span>
-          )}
-          {url && (
-            
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs font-semibold text-gold-600 hover:text-gold-700 transition-colors ml-auto"
-            >
-              {c.readMore} <ExternalLink size={11} />
-            </a>
-          )}
-        </div>
-      )}
-    </article>
-  );
-}
-
-function RegularPostCard({
-  post,
+ {(source || url) && (
+  <div className="flex items-center justify-between px-5 py-3 border-t border-ink-50 bg-cream-50/60">
+    {source && (
+      <span className="text-xs text-ink-400 font-medium truncate max-w-[60%]">
+        {c.source}: <span className="text-ink-600">{source}</span>
+      </span>
+    )}
+    {url && (
+      
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-1 text-xs font-semibold text-gold-600 hover:text-gold-700 transition-colors ml-auto"
+      >
+        {c.readMore} <ExternalLink size={11} />
+      </a>
+    )}
+  </div>
+)}
   lang,
   onDelete,
   deleteLabel,
