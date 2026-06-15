@@ -7,6 +7,7 @@ import { sealRouter } from "./routes/seal";
 import { badgeRouter } from "./routes/badge";
 import { communityRouter } from "./routes/community";
 import { educationRouter } from "./routes/education";
+import { newsIngestRouter } from "./routes/newsIngest";
 import { errorHandler } from "./middleware/errorHandler";
 import { authMiddleware } from "./middleware/auth";
 import productRouter from "./routes/product";
@@ -38,6 +39,9 @@ app.use("/api/seals", sealRouter);
 app.use("/api/verifications", authMiddleware, verificationRouter);
 app.use("/api/badges", authMiddleware, badgeRouter);
 app.use("/api/community", authMiddleware, communityRouter);
+
+// ── Admin (sem authMiddleware — protegida por ADMIN_SECRET no header)
+app.use("/api/admin", newsIngestRouter);
 
 // ── Healthcheck
 app.get("/health", (_req, res) => res.json({ status: "ok" }));

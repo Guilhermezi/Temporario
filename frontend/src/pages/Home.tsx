@@ -19,8 +19,6 @@ export default function Home() {
     <div className="min-h-screen flex flex-col fade-up">
       {/* Hero */}
       <section className="flex-1 flex flex-col items-center justify-center text-center px-6 pt-28 pb-16 relative">
-        {/* Decorative cherry emoji floater */}
-        <span className="absolute left-[8%] top-32 text-3xl select-none hidden lg:block" aria-hidden>🍒</span>
         <span className="absolute right-[9%] top-36 text-2xl text-ink-400 select-none hidden lg:block" aria-hidden>···</span>
 
         <p className="section-label mb-6">Junte-se à comunidade antifalsificação</p>

@@ -136,6 +136,21 @@ model CommunityPost {
   @@map("community_posts")
 }
 
+// ── Deduplicação de notícias ──────────────────────────────────────────────────
+// Guarda o fingerprint (SHA-256 truncado) de cada notícia já publicada.
+// Persiste entre deploys e reinicializações.
+
+model NewsFingerprint {
+  id          String   @id @default(uuid())
+  fingerprint String   @unique @db.Char(64)
+  sourceUrl   String   @default("") @db.VarChar(2048)
+  title       String   @default("") @db.VarChar(255)
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("news_fingerprints")
+}
+
 enum VerificationStatus {
   AUTHENTIC
   SUSPICIOUS
