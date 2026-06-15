@@ -13,6 +13,7 @@ import EsqueciSenha from "./pages/esqueci-senha";
 import RedefinirSenha from "./pages/redefinir-senha";
 import Privacidade from "./pages/privacidade";
 import Termos from "./pages/termos";
+import LandingAntifalsificacao from "./pages/LandingAntifalsificacao";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Auth />} />
+          {/* Compatibilidade: redireciona /perfil para login quando não autenticado (tratado internamente em Perfil) */}
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/verificar" element={<Verificador />} />
           <Route path="/feed" element={<Feed />} />
@@ -32,6 +34,9 @@ export default function App() {
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/termos" element={<Termos />} />
+          {/* Alias opcional: /aprender e esta URL exibem a mesma pagina completa. */}
+          <Route path="/landing-antifalsificacao" element={<LandingAntifalsificacao />} />
+          {/* Rota legada */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
