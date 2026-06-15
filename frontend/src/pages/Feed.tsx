@@ -60,7 +60,7 @@ function NewsCard({
         "group flex flex-col bg-white border border-ink-100 rounded-2xl overflow-hidden",
         "hover:shadow-md transition-shadow duration-200",
         featured ? "md:col-span-2" : "",
-      ].join(" ")}
+      ].filter(Boolean).join(" ")}
     >
       {/* Category bar */}
       <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-ink-50">
@@ -85,7 +85,12 @@ function NewsCard({
       </div>
 
       {/* Body */}
-      <div className={["flex flex-col gap-3 p-5 flex-1", featured ? "md:flex-row md:gap-8" : ""].join(" ")}>
+      <div
+        className={[
+          "flex flex-col gap-3 p-5 flex-1",
+          featured ? "md:flex-row md:gap-8" : "",
+        ].join(" ")}
+      >
         <div className="flex-1 min-w-0">
           {title && (
             <h2
@@ -98,7 +103,12 @@ function NewsCard({
             </h2>
           )}
           {description && (
-            <p className={["text-ink-600 leading-relaxed line-clamp-4", featured ? "text-base" : "text-sm line-clamp-3"].join(" ")}>
+            <p
+              className={[
+                "text-ink-600 leading-relaxed",
+                featured ? "text-base line-clamp-4" : "text-sm line-clamp-3",
+              ].join(" ")}
+            >
               {description}
             </p>
           )}
@@ -122,25 +132,27 @@ function NewsCard({
         <div className="flex items-center justify-between px-5 py-3 border-t border-ink-50 bg-cream-50/60">
           {source && (
             <span className="text-xs text-ink-400 font-medium truncate max-w-[60%]">
- {(source || url) && (
-  <div className="flex items-center justify-between px-5 py-3 border-t border-ink-50 bg-cream-50/60">
-    {source && (
-      <span className="text-xs text-ink-400 font-medium truncate max-w-[60%]">
-        {c.source}: <span className="text-ink-600">{source}</span>
-      </span>
-    )}
-    {url && (
-      
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-1 text-xs font-semibold text-gold-600 hover:text-gold-700 transition-colors ml-auto"
-      >
-        {c.readMore} <ExternalLink size={11} />
-      </a>
-    )}
-  </div>
-)}
+              {c.source}: <span className="text-ink-600">{source}</span>
+            </span>
+          )}
+          {url && (
+            
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs font-semibold text-gold-600 hover:text-gold-700 transition-colors ml-auto"
+            >
+              {c.readMore} <ExternalLink size={11} />
+            </a>
+          )}
+        </div>
+      )}
+    </article>
+  );
+}
+
+function RegularPostCard({
+  post,
   lang,
   onDelete,
   deleteLabel,
@@ -296,7 +308,6 @@ export default function Feed() {
     setPosts((prev) => prev.filter((p) => p.id !== id));
   };
 
-  // Separa primeiro post de notícia para tratamento de destaque
   const newsPosts = posts.filter(isNewsPost);
   const regularPosts = posts.filter((p) => !isNewsPost(p));
   const featuredNews = newsPosts[0] ?? null;
@@ -360,11 +371,14 @@ export default function Feed() {
                     post={featuredNews}
                     featured
                     lang={i18n.language}
-                    onDelete={user?.username === featuredNews.user.username ? () => handleDelete(featuredNews.id) : undefined}
+                    onDelete={
+                      user?.username === featuredNews.user.username
+                        ? () => handleDelete(featuredNews.id)
+                        : undefined
+                    }
                     deleteLabel={c.delete}
                     c={c}
                   />
-                  {/* Notícias secundárias ao lado da manchete */}
                   {restNews.length > 0 && (
                     <div className="flex flex-col gap-4">
                       {restNews.slice(0, 2).map((p) => (
@@ -373,7 +387,11 @@ export default function Feed() {
                           post={p}
                           featured={false}
                           lang={i18n.language}
-                          onDelete={user?.username === p.user.username ? () => handleDelete(p.id) : undefined}
+                          onDelete={
+                            user?.username === p.user.username
+                              ? () => handleDelete(p.id)
+                              : undefined
+                          }
                           deleteLabel={c.delete}
                           c={c}
                         />
@@ -382,7 +400,6 @@ export default function Feed() {
                   )}
                 </div>
 
-                {/* Demais notícias em grid */}
                 {restNews.length > 2 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                     {restNews.slice(2).map((p) => (
@@ -391,7 +408,11 @@ export default function Feed() {
                         post={p}
                         featured={false}
                         lang={i18n.language}
-                        onDelete={user?.username === p.user.username ? () => handleDelete(p.id) : undefined}
+                        onDelete={
+                          user?.username === p.user.username
+                            ? () => handleDelete(p.id)
+                            : undefined
+                        }
                         deleteLabel={c.delete}
                         c={c}
                       />
@@ -411,7 +432,11 @@ export default function Feed() {
                       key={p.id}
                       post={p}
                       lang={i18n.language}
-                      onDelete={user?.username === p.user.username ? () => handleDelete(p.id) : undefined}
+                      onDelete={
+                        user?.username === p.user.username
+                          ? () => handleDelete(p.id)
+                          : undefined
+                      }
                       deleteLabel={c.delete}
                       c={c}
                     />
@@ -427,7 +452,7 @@ export default function Feed() {
   );
 }
 
-// ─── Util ─────────────────────────────────────────────────────────────────────
+// ─── Util ────────────────────────────────────────────────────────────────────
 
 function SectionLabel({ label }: { label: string }) {
   return (
