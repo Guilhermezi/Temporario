@@ -22,7 +22,6 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Auth />} />
-          {/* Compatibilidade: redireciona /perfil para login quando não autenticado (tratado internamente em Perfil) */}
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/verificar" element={<Verificador />} />
           <Route path="/feed" element={<Feed />} />
@@ -33,7 +32,6 @@ export default function App() {
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/termos" element={<Termos />} />
-          {/* Rota legada */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

@@ -8,18 +8,28 @@ export default function Educacao() {
   const [selected, setSelected] = useState<(EducationItem & { body: string }) | null>(null)
   const [loadingArticle, setLoadingArticle] = useState(false)
 
-  useEffect(() => { api.education.list().then(setItems).finally(() => setLoading(false)) }, [])
+  useEffect(() => {
+    api.education.list().then(setItems).finally(() => setLoading(false))
+  }, [])
 
   const open = async (slug: string) => {
     setLoadingArticle(true)
-    try { setSelected(await api.education.get(slug)) }
-    catch (e: any) { alert(e.message) }
-    finally { setLoadingArticle(false) }
+    try {
+      setSelected(await api.education.get(slug))
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : 'Erro ao carregar conteúdo')
+    } finally {
+      setLoadingArticle(false)
+    }
   }
 
   const typeLabel: Record<string, string> = {
-    ARTICLE: 'Artigo', VIDEO: 'Vídeo', QUIZ: 'Quiz', INFOGRAPHIC: 'Infográfico'
+    ARTICLE: 'Artigo',
+    VIDEO: 'Vídeo',
+    QUIZ: 'Quiz',
+    INFOGRAPHIC: 'Infográfico',
   }
+
   const typeColor: Record<string, string> = {
     ARTICLE: 'text-blue-700 bg-blue-50 border border-blue-200',
     VIDEO: 'text-purple-700 bg-purple-50 border border-purple-200',
@@ -56,7 +66,6 @@ export default function Educacao() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 pt-28 pb-20 fade-up">
-      {/* Header */}
       <div className="mb-12">
         <p className="section-label mb-3">Conteúdo educativo</p>
         <h1 className="font-serif font-black text-5xl text-ink-900 mb-3">Learning</h1>
