@@ -1,7 +1,11 @@
+// ═══════════════════════════════════════════════════════════════════
+// pages/Auth.tsx — com i18n
+// ═══════════════════════════════════════════════════════════════════
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ShieldCheck, Eye, EyeOff, Loader2, LogIn, UserPlus, Check } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import { useI18n } from "../hooks/useI18n";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -11,16 +15,13 @@ type Profile = "Consumidor" | "Varejista" | "Marca";
 type Plan = "Gratuito" | "Profissional" | "Enterprise";
 
 interface FormData {
-  // Step 1
   displayName: string;
   email: string;
   password: string;
   confirmPassword: string;
-  // Step 2
   profile: Profile;
   company: string;
   plan: Plan;
-  // Login
   rememberMe: boolean;
 }
 
@@ -72,12 +73,7 @@ function StepIndicator({ step, total = 3 }: { step: Step; total?: number }) {
               {done ? <Check size={14} /> : num}
             </div>
             {i < total - 1 && (
-              <div
-                className={[
-                  "w-8 h-px",
-                  done ? "bg-ink-900" : "bg-ink-200",
-                ].join(" ")}
-              />
+              <div className={["w-8 h-px", done ? "bg-ink-900" : "bg-ink-200"].join(" ")} />
             )}
           </div>
         );
@@ -118,7 +114,6 @@ function PasswordField({
           type="button"
           onClick={() => setShow((s) => !s)}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-700 transition-colors"
-          aria-label={show ? "Ocultar senha" : "Mostrar senha"}
         >
           {show ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
@@ -128,12 +123,7 @@ function PasswordField({
   );
 }
 
-function PasswordRules({ password }: { password: string }) {
-  const rules = [
-    { label: "Mínimo 6 caracteres", ok: password.length >= 6 },
-    { label: "Pelo menos uma letra", ok: /[a-zA-Z]/.test(password) },
-    { label: "Pelo menos um número", ok: /\d/.test(password) },
-  ];
+function PasswordRules({ password, rules }: { password: string; rules: { label: string; ok: boolean }[] }) {
   return (
     <ul className="mt-2 space-y-1">
       {rules.map((r) => (
@@ -146,9 +136,7 @@ function PasswordRules({ password }: { password: string }) {
           >
             {r.ok && <Check size={8} />}
           </span>
-          <span className={r.ok ? "text-ink-700" : "text-ink-400"}>
-            {r.label}
-          </span>
+          <span className={r.ok ? "text-ink-700" : "text-ink-400"}>{r.label}</span>
         </li>
       ))}
     </ul>
@@ -205,6 +193,8 @@ function LoginForm({
   const [remember, setRemember] = useState(false);
   const [err, setErr] = useState("");
   const nav = useNavigate();
+  const { t } = useI18n();
+  const tx = t("auth");
 
   const submit = async () => {
     setErr("");
@@ -219,31 +209,29 @@ function LoginForm({
   return (
     <>
       <h1 className="font-serif font-black text-4xl text-ink-900 text-center mb-1">
-        Entrar
+        {tx.loginTitle}
       </h1>
-      <p className="text-ink-500 text-sm text-center mb-8">
-        Acesse sua conta para gerenciar verificações e integrações.
-      </p>
+      <p className="text-ink-500 text-sm text-center mb-8">{tx.loginSubtitle}</p>
 
       <Card>
         <div className="space-y-5">
           <div>
-            <label className="label">E-mail</label>
+            <label className="label">{tx.emailLabel}</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && submit()}
-              placeholder="seuemail.com"
+              placeholder={tx.emailPlaceholder}
               className="input"
             />
           </div>
 
           <PasswordField
-            label="Senha"
+            label={tx.passwordLabel}
             value={password}
             onChange={setPassword}
-            placeholder="Digite sua senha"
+            placeholder={tx.passwordPlaceholder}
             onKeyDown={(e) => e.key === "Enter" && submit()}
           />
 
@@ -255,13 +243,10 @@ function LoginForm({
                 onChange={(e) => setRemember(e.target.checked)}
                 className="rounded border-ink-300"
               />
-              Lembrar de mim
+              {tx.rememberMe}
             </label>
-            <Link
-              to="/esqueci-senha"
-              className="text-ink-500 hover:text-gold-500 underline text-xs"
-            >
-              Esqueceu a senha?
+            <Link to="/esqueci-senha" className="text-ink-500 hover:text-gold-500 underline text-xs">
+              {tx.forgotPassword}
             </Link>
           </div>
 
@@ -277,32 +262,26 @@ function LoginForm({
             className="btn-primary w-full justify-center py-3 text-base"
           >
             {loading ? (
-              <><Loader2 size={16} className="animate-spin mr-2" /> Aguarde…</>
+              <><Loader2 size={16} className="animate-spin mr-2" /> {tx.loginLoading}</>
             ) : (
-              <><LogIn size={16} className="mr-2" /> Entrar</>
+              <><LogIn size={16} className="mr-2" /> {tx.loginBtn}</>
             )}
           </button>
 
           <Divider />
 
           <p className="text-center text-sm text-ink-500">
-            Ainda não tem conta?{" "}
-            <button
-              onClick={onSwitch}
-              className="text-ink-900 font-semibold hover:underline"
-            >
-              Criar conta
+            {tx.noAccount}{" "}
+            <button onClick={onSwitch} className="text-ink-900 font-semibold hover:underline">
+              {tx.createAccount}
             </button>
           </p>
         </div>
       </Card>
 
       <p className="text-center mt-6">
-        <Link
-          to="/"
-          className="text-sm text-ink-500 hover:text-ink-700"
-        >
-          ← Voltar para o início
+        <Link to="/" className="text-sm text-ink-500 hover:text-ink-700">
+          {tx.backToHome}
         </Link>
       </p>
     </>
@@ -323,14 +302,22 @@ function RegisterStep1({
   onSwitch: () => void;
 }) {
   const [err, setErr] = useState("");
+  const { t } = useI18n();
+  const tx = t("auth");
+
+  const rules = [
+    { label: tx.ruleMinChars, ok: data.password.length >= 6 },
+    { label: tx.ruleOneLetter, ok: /[a-zA-Z]/.test(data.password) },
+    { label: tx.ruleOneNumber, ok: /\d/.test(data.password) },
+  ];
 
   const next = () => {
     setErr("");
     if (!data.displayName.trim()) { setErr("Nome completo é obrigatório."); return; }
     if (!data.email.includes("@")) { setErr("E-mail inválido."); return; }
-    if (data.password.length < 6) { setErr("A senha precisa de pelo menos 6 caracteres."); return; }
-    if (!/[a-zA-Z]/.test(data.password)) { setErr("A senha precisa de pelo menos uma letra."); return; }
-    if (!/\d/.test(data.password)) { setErr("A senha precisa de pelo menos um número."); return; }
+    if (data.password.length < 6) { setErr(tx.ruleMinChars); return; }
+    if (!/[a-zA-Z]/.test(data.password)) { setErr(tx.ruleOneLetter); return; }
+    if (!/\d/.test(data.password)) { setErr(tx.ruleOneNumber); return; }
     if (data.password !== data.confirmPassword) { setErr("As senhas não conferem."); return; }
     onNext();
   };
@@ -342,45 +329,43 @@ function RegisterStep1({
       <Card>
         <div className="space-y-5">
           <div>
-            <label className="label">Nome Completo</label>
+            <label className="label">{tx.nameLabel}</label>
             <input
               type="text"
               value={data.displayName}
               onChange={(e) => onChange({ displayName: e.target.value })}
-              placeholder="Seu nome"
+              placeholder={tx.namePlaceholder}
               className="input"
             />
           </div>
 
           <div>
-            <label className="label">E-mail</label>
+            <label className="label">{tx.emailLabel}</label>
             <input
               type="email"
               value={data.email}
               onChange={(e) => onChange({ email: e.target.value })}
-              placeholder="seugmail.com, contato@outlook.com"
+              placeholder={tx.emailPlaceholder}
               className="input"
             />
-            <p className="text-xs text-ink-400 mt-1">
-              Aceitamos Gmail, Outlook, Proton, Tuta, Yahoo, iCloud e outros.
-            </p>
+            <p className="text-xs text-ink-400 mt-1">{tx.emailHint}</p>
           </div>
 
           <div>
             <PasswordField
-              label="Senha"
+              label={tx.newPasswordLabel}
               value={data.password}
               onChange={(v) => onChange({ password: v })}
-              placeholder="Crie uma senha forte"
+              placeholder={tx.newPasswordPlaceholder}
             />
-            <PasswordRules password={data.password} />
+            <PasswordRules password={data.password} rules={rules} />
           </div>
 
           <PasswordField
-            label="Confirmar Senha"
+            label={tx.confirmPasswordLabel}
             value={data.confirmPassword}
             onChange={(v) => onChange({ confirmPassword: v })}
-            placeholder="Repita a senha"
+            placeholder={tx.confirmPasswordPlaceholder}
           />
 
           {err && (
@@ -390,7 +375,7 @@ function RegisterStep1({
           )}
 
           <button onClick={next} className="btn-primary w-full justify-center py-3 text-base">
-            Próximo →
+            {tx.nextBtn}
           </button>
 
           <DotProgress step={1} />
@@ -398,12 +383,9 @@ function RegisterStep1({
           <Divider />
 
           <p className="text-center text-sm text-ink-500">
-            Já tem conta?{" "}
-            <button
-              onClick={onSwitch}
-              className="text-ink-900 font-semibold hover:underline"
-            >
-              Fazer login
+            {tx.hasAccount}{" "}
+            <button onClick={onSwitch} className="text-ink-900 font-semibold hover:underline">
+              {tx.doLogin}
             </button>
           </p>
         </div>
@@ -427,15 +409,17 @@ function RegisterStep2({
   onBack: () => void;
   onSwitch: () => void;
 }) {
+  const { t } = useI18n();
+  const tx = t("auth");
+
   return (
     <>
       <StepIndicator step={2} />
 
       <Card>
         <div className="space-y-5">
-          {/* Profile selector */}
           <div>
-            <label className="label">Você é</label>
+            <label className="label">{tx.profileLabel}</label>
             <div className="flex gap-2">
               {PROFILES.map((p) => (
                 <button
@@ -455,23 +439,22 @@ function RegisterStep2({
             </div>
           </div>
 
-          {/* Company (optional) */}
           <div>
             <label className="label">
-              Empresa <span className="text-ink-400 font-normal normal-case">(opcional)</span>
+              {tx.companyLabel}{" "}
+              <span className="text-ink-400 font-normal normal-case">{tx.companyOptional}</span>
             </label>
             <input
               type="text"
               value={data.company}
               onChange={(e) => onChange({ company: e.target.value })}
-              placeholder="Nome da sua empresa"
+              placeholder={tx.companyPlaceholder}
               className="input"
             />
           </div>
 
-          {/* Plan selector */}
           <div>
-            <label className="label">Plano</label>
+            <label className="label">{tx.planLabel}</label>
             <div className="space-y-2">
               {PLANS.map((pl) => (
                 <button
@@ -500,17 +483,11 @@ function RegisterStep2({
           </div>
 
           <div className="flex gap-3">
-            <button
-              onClick={onBack}
-              className="flex-1 btn-secondary justify-center py-3"
-            >
-              Voltar
+            <button onClick={onBack} className="flex-1 btn-secondary justify-center py-3">
+              {tx.backBtn}
             </button>
-            <button
-              onClick={onNext}
-              className="flex-1 btn-primary justify-center py-3"
-            >
-              Próximo →
+            <button onClick={onNext} className="flex-1 btn-primary justify-center py-3">
+              {tx.nextBtn}
             </button>
           </div>
 
@@ -519,12 +496,9 @@ function RegisterStep2({
           <Divider />
 
           <p className="text-center text-sm text-ink-500">
-            Já tem conta?{" "}
-            <button
-              onClick={onSwitch}
-              className="text-ink-900 font-semibold hover:underline"
-            >
-              Fazer login
+            {tx.hasAccount}{" "}
+            <button onClick={onSwitch} className="text-ink-900 font-semibold hover:underline">
+              {tx.doLogin}
             </button>
           </p>
         </div>
@@ -550,6 +524,8 @@ function RegisterStep3({
 }) {
   const [agreed, setAgreed] = useState(false);
   const [err, setErr] = useState("");
+  const { t } = useI18n();
+  const tx = t("auth");
 
   const submit = () => {
     if (!agreed) { setErr("Você precisa aceitar os Termos de Uso e a Política de Privacidade."); return; }
@@ -558,10 +534,10 @@ function RegisterStep3({
   };
 
   const rows: { label: string; value: string }[] = [
-    { label: "Nome", value: data.displayName || "—" },
-    { label: "E-mail", value: data.email || "—" },
-    { label: "Perfil", value: data.profile },
-    { label: "Plano", value: data.plan },
+    { label: tx.summaryName, value: data.displayName || "—" },
+    { label: tx.summaryEmail, value: data.email || "—" },
+    { label: tx.summaryProfile, value: data.profile },
+    { label: tx.summaryPlan, value: data.plan },
   ];
 
   return (
@@ -570,19 +546,15 @@ function RegisterStep3({
 
       <Card>
         <div className="space-y-5">
-          {/* Summary */}
           <div className="space-y-3">
             {rows.map((r) => (
               <div key={r.label} className="bg-cream-50 rounded-xl px-4 py-3">
-                <p className="text-[10px] uppercase tracking-widest text-ink-400 mb-0.5">
-                  {r.label}
-                </p>
+                <p className="text-[10px] uppercase tracking-widest text-ink-400 mb-0.5">{r.label}</p>
                 <p className="text-ink-900 text-sm font-medium">{r.value}</p>
               </div>
             ))}
           </div>
 
-          {/* Terms */}
           <label className="flex items-start gap-3 cursor-pointer text-sm text-ink-600 leading-snug">
             <input
               type="checkbox"
@@ -591,15 +563,15 @@ function RegisterStep3({
               className="mt-0.5 rounded border-ink-300"
             />
             <span>
-              Aceito os{" "}
+              {tx.agreeText}{" "}
               <Link to="/termos" className="underline text-ink-900 hover:text-gold-500">
-                Termos de Uso
+                {tx.agreeTerms}
               </Link>{" "}
-              e a{" "}
+              {tx.agreeAnd}{" "}
               <Link to="/privacidade" className="underline text-ink-900 hover:text-gold-500">
-                Política de Privacidade
+                {tx.agreePrivacy}
               </Link>{" "}
-              da byTrust.
+              {tx.agreeOf}
             </span>
           </label>
 
@@ -611,7 +583,7 @@ function RegisterStep3({
 
           <div className="flex gap-3">
             <button onClick={onBack} className="flex-1 btn-secondary justify-center py-3">
-              Voltar
+              {tx.backBtn}
             </button>
             <button
               onClick={submit}
@@ -619,9 +591,9 @@ function RegisterStep3({
               className="flex-1 btn-primary justify-center py-3"
             >
               {loading ? (
-                <><Loader2 size={16} className="animate-spin mr-1" /> Aguarde…</>
+                <><Loader2 size={16} className="animate-spin mr-1" /> {tx.submitLoading}</>
               ) : (
-                <><UserPlus size={16} className="mr-1" /> Criar conta</>
+                <><UserPlus size={16} className="mr-1" /> {tx.submitBtn}</>
               )}
             </button>
           </div>
@@ -631,12 +603,9 @@ function RegisterStep3({
           <Divider />
 
           <p className="text-center text-sm text-ink-500">
-            Já tem conta?{" "}
-            <button
-              onClick={onSwitch}
-              className="text-ink-900 font-semibold hover:underline"
-            >
-              Fazer login
+            {tx.hasAccount}{" "}
+            <button onClick={onSwitch} className="text-ink-900 font-semibold hover:underline">
+              {tx.doLogin}
             </button>
           </p>
         </div>
@@ -650,6 +619,9 @@ function RegisterStep3({
 export default function Auth() {
   const { user, login, register, loading } = useAuth();
   const nav = useNavigate();
+  const { t } = useI18n();
+  const tx = t("auth");
+
   const [mode, setMode] = useState<Mode>("login");
   const [step, setStep] = useState<Step>(1);
 
@@ -680,14 +652,12 @@ export default function Auth() {
       await register(f.email, f.displayName.split(" ")[0].toLowerCase(), f.password, f.displayName);
       nav("/verificar", { replace: true });
     } catch (e) {
-      // Error shown inside step 3 component via thrown error — re-throw
       throw e;
     }
   };
 
   return (
     <div className="min-h-screen bg-cream-50 flex flex-col">
-      {/* Navbar placeholder — matches screenshots */}
       <nav className="h-14 border-b border-ink-100 bg-white flex items-center px-8 gap-8">
         <div className="flex items-center gap-2 font-serif font-bold text-lg text-ink-900">
           <div className="w-7 h-7 rounded-full bg-ink-900 flex items-center justify-center">
@@ -702,35 +672,28 @@ export default function Auth() {
             onClick={() => switchMode("login")}
             className="flex items-center gap-1.5 hover:text-ink-900"
           >
-            <LogIn size={14} /> Entrar
+            <LogIn size={14} /> {tx.loginBtn}
           </button>
           <button
             onClick={() => switchMode("register")}
             className="btn-secondary py-1.5 px-4 text-sm"
           >
-            Criar conta →
+            {tx.createAccount} →
           </button>
         </div>
       </nav>
 
-      {/* Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
         <Logo />
 
         {mode === "login" ? (
-          <LoginForm
-            onSwitch={() => switchMode("register")}
-            login={login}
-            loading={loading}
-          />
+          <LoginForm onSwitch={() => switchMode("register")} login={login} loading={loading} />
         ) : (
           <>
             <h1 className="font-serif font-black text-4xl text-ink-900 text-center mb-1">
-              Criar conta
+              {tx.registerTitle}
             </h1>
-            <p className="text-ink-500 text-sm text-center mb-8">
-              Junte-se à comunidade antifalsificação.
-            </p>
+            <p className="text-ink-500 text-sm text-center mb-8">{tx.registerSubtitle}</p>
 
             {step === 1 && (
               <RegisterStep1
@@ -761,7 +724,7 @@ export default function Auth() {
 
             <p className="text-center mt-6">
               <Link to="/" className="text-sm text-ink-500 hover:text-ink-700">
-                ← Voltar para o início
+                {tx.backToHome}
               </Link>
             </p>
           </>

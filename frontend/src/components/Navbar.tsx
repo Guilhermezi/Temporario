@@ -1,18 +1,39 @@
+// ── components/Navbar.tsx
+import { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { ShieldCheck, User, LogOut } from "lucide-react";
+import { User, LogOut, ChevronDown, Check } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import { useI18n, LOCALES } from "../hooks/useI18n";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { locale, setLocale, t } = useI18n();
+  const tx = t("navbar");
+
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+
+  // Fecha o dropdown ao clicar fora
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const currentLang = LOCALES.find((l) => l.id === locale)!;
 
   const links = [
-    { to: "/", label: "INÍCIO" },
-    { to: "/verificar", label: "VERIFICADOR" },
-    { to: "/aprender", label: "LEARNING" },
-    { to: "/feed", label: "BLOG" },
-    { to: "/cartilhas", label: "CARTILHAS" },
-    { to: "/contato", label: "CONTATO" },
+    { to: "/", label: tx.home },
+    { to: "/verificar", label: tx.verify },
+    { to: "/aprender", label: tx.learn },
+    { to: "/feed", label: tx.feed },
+    { to: "/cartilhas", label: tx.booklets },
+    { to: "/contato", label: tx.contact },
   ];
 
   return (
@@ -23,7 +44,6 @@ export default function Navbar() {
           onClick={() => navigate("/")}
           className="flex items-center gap-3 group"
         >
-          {/* Lupa com checkmark */}
           <svg
             width="36"
             height="36"
@@ -42,11 +62,8 @@ export default function Navbar() {
               strokeLinejoin="round"
             />
           </svg>
-          
-          {/* Texto byTrust. */}
           <span className="font-serif font-bold text-2xl text-ink-900 leading-none">
-            by
-            <em className="not-italic text-gold-500">Trust</em>
+            by<em className="not-italic text-gold-500">Trust</em>
             <span className="text-gold-500">.</span>
           </span>
         </button>
@@ -57,11 +74,10 @@ export default function Navbar() {
             <NavLink
               key={link.to}
               to={link.to}
+              end={link.to === "/"}
               className={({ isActive }) =>
                 `text-sm font-semibold tracking-wide transition-colors ${
-                  isActive
-                    ? "text-gold-500"
-                    : "text-ink-700 hover:text-ink-900"
+                  isActive ? "text-gold-500" : "text-ink-700 hover:text-ink-900"
                 }`
               }
             >
@@ -72,6 +88,50 @@ export default function Navbar() {
 
         {/* Right Side */}
         <div className="flex items-center gap-3">
+          {/* ── Language Switcher ── */}
+          <div className="relative" ref={langRef}>
+            <button
+              onClick={() => setLangOpen((o) => !o)}
+              aria-label={tx.langLabel}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium text-ink-600 hover:text-ink-900 hover:bg-ink-100 transition-all"
+            >
+              <span className="text-base leading-none">{currentLang.flag}</span>
+              <span className="hidden sm:inline text-xs font-semibold tracking-wide uppercase">
+                {currentLang.id}
+              </span>
+              <ChevronDown
+                size={13}
+                className={`transition-transform ${langOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {langOpen && (
+              <div className="absolute right-0 top-full mt-2 w-44 bg-cream-50 border border-ink-200 rounded-xl shadow-lg py-1 overflow-hidden z-50">
+                {LOCALES.map((loc) => (
+                  <button
+                    key={loc.id}
+                    onClick={() => {
+                      setLocale(loc.id);
+                      setLangOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+                      locale === loc.id
+                        ? "bg-gold-500/10 text-gold-700 font-semibold"
+                        : "text-ink-700 hover:bg-ink-50"
+                    }`}
+                  >
+                    <span className="text-base">{loc.flag}</span>
+                    <span className="flex-1 text-left">{loc.label}</span>
+                    {locale === loc.id && (
+                      <Check size={13} className="text-gold-600 shrink-0" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Auth buttons */}
           {user ? (
             <>
               <NavLink
@@ -94,7 +154,7 @@ export default function Navbar() {
                   navigate("/");
                 }}
                 className="p-2 rounded-full text-ink-500 hover:text-ink-900 hover:bg-ink-100 transition-colors"
-                aria-label="Sair"
+                aria-label={tx.logout}
               >
                 <LogOut size={16} />
               </button>
@@ -106,14 +166,14 @@ export default function Navbar() {
                 className="flex items-center gap-2 text-sm font-medium text-ink-700 hover:text-ink-900 transition-colors"
               >
                 <LogOut size={16} className="rotate-180" />
-                ENTRAR
+                {tx.login}
               </button>
 
               <button
                 onClick={() => navigate("/login")}
                 className="btn-outline text-sm py-2 px-5"
               >
-                Criar conta →
+                {tx.createAccount}
               </button>
 
               <button
@@ -135,11 +195,10 @@ export default function Navbar() {
             <NavLink
               key={link.to}
               to={link.to}
+              end={link.to === "/"}
               className={({ isActive }) =>
                 `px-4 py-3 text-xs font-semibold whitespace-nowrap transition-colors ${
-                  isActive
-                    ? "text-gold-500"
-                    : "text-ink-600"
+                  isActive ? "text-gold-500" : "text-ink-600"
                 }`
               }
             >
@@ -151,14 +210,29 @@ export default function Navbar() {
             to={user ? "/perfil" : "/login"}
             className={({ isActive }) =>
               `px-4 py-3 text-xs font-semibold whitespace-nowrap transition-colors ${
-                isActive
-                  ? "text-gold-500"
-                  : "text-ink-600"
+                isActive ? "text-gold-500" : "text-ink-600"
               }`
             }
           >
-            {user ? (user.displayName ?? user.username) : "ENTRAR"}
+            {user ? (user.displayName ?? user.username) : tx.login}
           </NavLink>
+
+          {/* Mobile lang switcher compacto */}
+          <div className="flex items-center px-3 gap-1 border-l border-ink-200">
+            {LOCALES.map((loc) => (
+              <button
+                key={loc.id}
+                onClick={() => setLocale(loc.id)}
+                className={`text-xs px-2 py-1 rounded-full font-semibold transition-colors ${
+                  locale === loc.id
+                    ? "bg-gold-500/10 text-gold-700"
+                    : "text-ink-400 hover:text-ink-700"
+                }`}
+              >
+                {loc.flag}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </nav>

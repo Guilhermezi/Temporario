@@ -1,48 +1,16 @@
+// ═══════════════════════════════════════════════════════════════════
+// pages/cartilhas.tsx — com i18n
+// ═══════════════════════════════════════════════════════════════════
 import { Download } from "lucide-react";
+import { useI18n } from "../hooks/useI18n";
 
-const items = [
-  {
-    t: "10 sinais de um produto falso",
-    d: "Guia rápido com checklist visual para identificar falsificações no ato da compra.",
-    arquivo: "10_sinais_de_um_produto_falso.pdf",
-    pages: 1,
-    bgCard: "bg-gold-500/10",
-  },
-  {
-    t: "Qual o problema da falsificação?",
-    d: "Impactos econômicos, riscos à saúde e consequências para consumidores e marcas.",
-    arquivo: "Qual_o_problema_da_falsificação.pdf",
-    pages: 1,
-    bgCard: "bg-cream-200",
-  },
-  {
-    t: "Cartilha do consumidor consciente",
-    d: "Como comprar online com segurança e usar a API byTrust no dia a dia.",
-    arquivo: "O_que_é_consumo_conciente.pdf",
-    pages: 1,
-    bgCard: "bg-emerald-500/10",
-  },
-  {
-    t: "Onde a falsificação está presente?",
-    d: "Setores mais afetados pela pirataria e como a falsificação se infiltra em diferentes mercados.",
-    arquivo: "Onde_a_falsificação_está_presente.pdf",
-    pages: 1,
-    bgCard: "bg-cream-100",
-  },
-  {
-    t: "Falsificações em cosméticos",
-    d: "Como reconhecer perfumes, maquiagens e dermocosméticos piratas.",
-    arquivo: "Falsificação_em_cosmeticos.pdf",
-    pages: 1,
-    bgCard: "bg-red-500/10",
-  },
-  {
-    t: "Porque comprar original?",
-    d: "Os riscos de produtos falsificados e os benefícios de escolher o original.",
-    arquivo: "Porque_comprar_original.pdf",
-    pages: 1,
-    bgCard: "bg-gold-400/10",
-  },
+const FILES = [
+  { arquivo: "10_sinais_de_um_produto_falso.pdf", bgCard: "bg-gold-500/10" },
+  { arquivo: "Qual_o_problema_da_falsificação.pdf", bgCard: "bg-cream-200" },
+  { arquivo: "O_que_é_consumo_conciente.pdf", bgCard: "bg-emerald-500/10" },
+  { arquivo: "Onde_a_falsificação_está_presente.pdf", bgCard: "bg-cream-100" },
+  { arquivo: "Falsificação_em_cosmeticos.pdf", bgCard: "bg-red-500/10" },
+  { arquivo: "Porque_comprar_original.pdf", bgCard: "bg-gold-400/10" },
 ];
 
 async function download(arquivo: string) {
@@ -59,22 +27,22 @@ async function download(arquivo: string) {
 }
 
 export default function Cartilhas() {
+  const { t } = useI18n();
+  const tx = t("cartilhas");
+
+  const items = FILES.map((f, i) => ({ ...f, ...tx.items[i] }));
+
   return (
     <div className="min-h-screen fade-up pt-24 pb-16 px-5 max-w-6xl mx-auto">
       <div className="text-center mb-10">
-        <p className="section-label mb-3">📘 Cartilhas byTrust</p>
-        <h1 className="display-title text-4xl md:text-6xl mb-4">
-          Baixe nossos guias completos
-        </h1>
-        <p className="text-ink-600 max-w-2xl mx-auto">
-          Material educativo gratuito para consumidores, lojistas, marcas e desenvolvedores.
-        </p>
+        <p className="section-label mb-3">{tx.eyebrow}</p>
+        <h1 className="display-title text-4xl md:text-6xl mb-4">{tx.title}</h1>
+        <p className="text-ink-600 max-w-2xl mx-auto">{tx.subtitle}</p>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {items.map((it) => (
-          <div key={it.t} className={`card-hover flex flex-col ${it.bgCard}`}>
-            {/* Preview da capa — mostra imagem se existir, caso contrário exibe ícone */}
+          <div key={it.arquivo} className={`card-hover flex flex-col ${it.bgCard}`}>
             <div
               className="aspect-[3/4] rounded-xl border border-ink-200 bg-cream-50 mb-4 p-6 flex flex-col justify-between relative overflow-hidden"
               style={{
@@ -84,7 +52,7 @@ export default function Cartilhas() {
               }}
             >
               <div className="absolute top-3 right-3">
-                <span className="tag tag-gold text-[10px]">PDF · {it.pages}p</span>
+                <span className="tag tag-gold text-[10px]">PDF · 1p</span>
               </div>
               <div />
               <div className="bg-cream-50/90 p-3 rounded-lg">
@@ -98,7 +66,7 @@ export default function Cartilhas() {
               onClick={() => download(it.arquivo)}
               className="btn-primary text-sm justify-center"
             >
-              <Download className="w-4 h-4" /> Baixar PDF
+              <Download className="w-4 h-4" /> {tx.downloadBtn}
             </button>
           </div>
         ))}

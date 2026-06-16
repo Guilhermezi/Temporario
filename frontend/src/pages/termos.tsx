@@ -1,23 +1,27 @@
+// ═══════════════════════════════════════════════════════════════════
+// pages/termos.tsx — com i18n (cabeçalho e botão voltar)
+// ═══════════════════════════════════════════════════════════════════
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useI18n } from "../hooks/useI18n";
 
 export default function Termos() {
+  const { t } = useI18n();
+  const tx = t("legal");
+
   return (
     <div className="min-h-screen fade-up pt-24 pb-16 px-5">
       <section className="max-w-4xl mx-auto">
-        {/* Cabeçalho */}
         <div className="text-center mb-12">
-          <p className="section-label mb-3">📜 Termos de Uso</p>
+          <p className="section-label mb-3">{tx.termsEyebrow}</p>
           <h1 className="font-serif font-bold text-4xl md:text-6xl leading-tight mb-4">
-            Termos e Condições de Uso da <span className="text-gold-500">byTrust</span>
+            {tx.termsTitle.split("byTrust")[0]}
+            <span className="text-gold-500">byTrust</span>
           </h1>
-          <p className="text-sm text-ink-600 font-mono">
-            Última atualização: 06 de junho de 2026
-          </p>
+          <p className="text-sm text-ink-600 font-mono">{tx.termsUpdated}</p>
         </div>
 
         <div className="space-y-8 text-base leading-relaxed">
-          {/* 1. Aceitação */}
           <LegalSection title="1. Aceitação dos Termos">
             <p>
               Ao acessar ou utilizar a plataforma byTrust (doravante denominada "byTrust", "plataforma",
@@ -30,7 +34,6 @@ export default function Termos() {
             </p>
           </LegalSection>
 
-          {/* 2. Objeto */}
           <LegalSection title="2. Objeto do Serviço">
             <p>
               A byTrust é uma plataforma de verificação de autenticidade de produtos que oferece
@@ -38,9 +41,7 @@ export default function Termos() {
               confirmem a originalidade de itens por meio de códigos de série, QR Codes, fotos ou
               integração via API.
             </p>
-            <p>
-              Os serviços da byTrust incluem, mas não se limitam a:
-            </p>
+            <p>Os serviços da byTrust incluem, mas não se limitam a:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Verificação de autenticidade de produtos em tempo real;</li>
               <li>API de integração para sistemas de estoque, e-commerce e aplicativos;</li>
@@ -49,16 +50,13 @@ export default function Termos() {
             </ul>
           </LegalSection>
 
-          {/* 3. Cadastro */}
           <LegalSection title="3. Cadastro e Responsabilidades do Usuário">
             <p>
               Para acessar determinados recursos da plataforma, o Usuário deverá criar uma conta,
               fornecendo informações verdadeiras, precisas, atuais e completas. O Usuário é
               integralmente responsável pela guarda e confidencialidade de sua senha e dados de acesso.
             </p>
-            <p>
-              O Usuário compromete-se a:
-            </p>
+            <p>O Usuário compromete-se a:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Não utilizar a plataforma para fins ilícitos ou fraudulentos;</li>
               <li>Não reproduzir, distribuir ou modificar conteúdo da byTrust sem autorização expressa;</li>
@@ -71,16 +69,13 @@ export default function Termos() {
             </p>
           </LegalSection>
 
-          {/* 4. Verificação */}
           <LegalSection title="4. Resultados da Verificação">
             <p>
               A byTrust emprega os melhores esforços técnicos para garantir a precisão das informações
               de autenticidade fornecidas pela plataforma. No entanto, os resultados das verificações
               são baseados nos dados cadastrados pelos fabricantes e marcas parceiras.
             </p>
-            <p>
-              A byTrust <strong>não se responsabiliza</strong> por:
-            </p>
+            <p>A byTrust <strong>não se responsabiliza</strong> por:</p>
             <ul className="list-disc pl-6 space-y-1">
               <li>Decisões de compra ou venda tomadas com base nas verificações;</li>
               <li>Danos decorrentes de produtos falsificados que não tenham sido cadastrados na plataforma;</li>
@@ -92,7 +87,6 @@ export default function Termos() {
             </p>
           </LegalSection>
 
-          {/* 5. Planos */}
           <LegalSection title="5. Planos e Pagamentos">
             <p>
               A byTrust oferece diferentes planos de uso (Gratuito, Profissional e Enterprise), cada
@@ -105,7 +99,6 @@ export default function Termos() {
             </p>
           </LegalSection>
 
-          {/* 6. Propriedade Intelectual */}
           <LegalSection title="6. Propriedade Intelectual">
             <p>
               Todo o conteúdo disponível na plataforma byTrust — incluindo textos, imagens, logotipos,
@@ -119,23 +112,17 @@ export default function Termos() {
             </p>
           </LegalSection>
 
-          {/* 7. Proteção de Dados */}
           <LegalSection title="7. Proteção de Dados Pessoais">
             <p>
               A byTrust trata os dados pessoais dos Usuários em conformidade com a Lei Geral de
               Proteção de Dados Pessoais (LGPD - Lei nº 13.709/2018). Para informações detalhadas
-              sobre como coletamos, utilizamos, armazenamos e protegemos seus dados, consulte nossa
-             {" "}
-              <Link
-                to="/privacidade"
-                className="underline text-ink-900 hover:text-gold-500 font-medium"
-              >
+              sobre como coletamos, utilizamos, armazenamos e protegemos seus dados, consulte nossa{" "}
+              <Link to="/privacidade" className="underline text-ink-900 hover:text-gold-500 font-medium">
                 Política de Privacidade
               </Link>.
             </p>
           </LegalSection>
 
-          {/* 8. Limitação de Responsabilidade */}
           <LegalSection title="8. Limitação de Responsabilidade">
             <p>
               A byTrust não será responsabilizada por danos indiretos, lucros cessantes ou perda de
@@ -150,7 +137,6 @@ export default function Termos() {
             </p>
           </LegalSection>
 
-          {/* 9. Disposições Gerais */}
           <LegalSection title="9. Disposições Gerais">
             <p>
               Estes Termos regem-se pelas leis da República Federativa do Brasil. Fica eleito o foro
@@ -169,13 +155,9 @@ export default function Termos() {
           </LegalSection>
         </div>
 
-        {/* Voltar */}
         <div className="mt-12 text-center">
-          <Link
-            to="/"
-            className="btn-outline inline-flex items-center gap-2"
-          >
-            <ArrowRight className="w-4 h-4 rotate-180" /> Voltar para o início
+          <Link to="/" className="btn-outline inline-flex items-center gap-2">
+            <ArrowRight className="w-4 h-4 rotate-180" /> {tx.backBtn}
           </Link>
         </div>
       </section>

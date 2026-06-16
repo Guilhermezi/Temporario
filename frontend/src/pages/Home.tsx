@@ -1,32 +1,43 @@
-import { useNavigate } from 'react-router-dom'
-import { ShieldCheck, ArrowRight, Zap, Trophy, Users } from 'lucide-react'
+// ── pages/Home.tsx
+import { useNavigate } from "react-router-dom";
+import { ShieldCheck, ArrowRight, Zap, Trophy, Users } from "lucide-react";
+import { useI18n } from "../hooks/useI18n";
 
 const TICKER_ITEMS = [
-  'API ANTIPIRATARIA',
-  'CONFIANÇA CERTIFICADA',
-  'VERIFICAÇÃO EM TEMPO REAL',
-  '+500 MIL PRODUTOS VERIFICADOS',
-  'CONFIANÇA CERTIFICADA',
-  'PRODUTOS VERIFICADOS',
-  'API ANTIPIRATARIA',
-  'VERIFICAÇÃO EM TEMPO REAL',
-]
+  "API ANTIPIRATARIA",
+  "CONFIANÇA CERTIFICADA",
+  "VERIFICAÇÃO EM TEMPO REAL",
+  "+500 MIL PRODUTOS VERIFICADOS",
+  "CONFIANÇA CERTIFICADA",
+  "PRODUTOS VERIFICADOS",
+  "API ANTIPIRATARIA",
+  "VERIFICAÇÃO EM TEMPO REAL",
+];
 
 export default function Home() {
-  const nav = useNavigate()
+  const nav = useNavigate();
+  const { t } = useI18n();
+  const tx = t("home");
 
   return (
     <div className="min-h-screen flex flex-col fade-up">
       {/* Hero */}
       <section className="flex-1 flex flex-col items-center justify-center text-center px-6 pt-28 pb-16 relative">
-        <span className="absolute right-[9%] top-36 text-2xl text-ink-400 select-none hidden lg:block" aria-hidden>···</span>
+        <span
+          className="absolute right-[9%] top-36 text-2xl text-ink-400 select-none hidden lg:block"
+          aria-hidden
+        >
+          ···
+        </span>
 
-        <p className="section-label mb-6">Junte-se à comunidade antifalsificação</p>
+        <p className="section-label mb-6">{tx.eyebrow}</p>
 
-        {/* Hero headline */}
         <div className="relative mb-2">
           <span className="relative inline-block">
-            <span className="absolute inset-0 bg-gold-500/20 rounded -rotate-1 scale-x-105 scale-y-110" aria-hidden />
+            <span
+              className="absolute inset-0 bg-gold-500/20 rounded -rotate-1 scale-x-105 scale-y-110"
+              aria-hidden
+            />
             <h1 className="display-title text-5xl md:text-7xl lg:text-8xl relative z-10 px-4">
               byTrust
             </h1>
@@ -34,30 +45,40 @@ export default function Home() {
         </div>
 
         <h2 className="display-title text-4xl md:text-6xl lg:text-7xl mt-2 max-w-3xl">
-          protegendo sua <em>confiança,</em>
-          <br />produto por produto
+          {tx.headline2}
+          <br />
+          {tx.headline3}
         </h2>
 
-        {/* Stamp */}
         <div className="mt-8 mb-8">
-          <span className="stamp">
-            Onde a autenticidade vira certeza,<br />e a falsificação vira história.
-          </span>
+          <span className="stamp">{tx.stamp}</span>
         </div>
 
-        {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row gap-3 mt-2">
-          <button onClick={() => nav('/verificar')} className="btn-primary text-base px-8 py-3.5">
-            Verificar autenticidade agora <ArrowRight size={17} />
+          <button
+            onClick={() => nav("/verificar")}
+            className="btn-primary text-base px-8 py-3.5"
+          >
+            {tx.ctaVerify} <ArrowRight size={17} />
           </button>
-          <button onClick={() => nav('/aprender')} className="btn-outline text-base px-8 py-3.5">
-            Aprender mais
+          <button
+            onClick={() => nav("/aprender")}
+            className="btn-outline text-base px-8 py-3.5"
+          >
+            {tx.ctaLearn}
           </button>
         </div>
 
         <p className="mt-8 text-ink-500 text-sm max-w-md leading-relaxed">
-          A API byTrust valida cada item em tempo real — um simples código, QR ou foto basta
-          para confirmar se um produto é <strong className="text-ink-800">original</strong> ou <strong className="text-ink-800">falsificado</strong>.
+          {tx.description.split(tx.descriptionOriginal)[0]}
+          <strong className="text-ink-800">{tx.descriptionOriginal}</strong>
+          {tx.description
+            .split(tx.descriptionOriginal)[1]
+            ?.split(tx.descriptionFake)[0]}
+          <strong className="text-ink-800">{tx.descriptionFake}</strong>
+          {tx.description
+            .split(tx.descriptionOriginal)[1]
+            ?.split(tx.descriptionFake)[1]}
         </p>
       </section>
 
@@ -65,9 +86,14 @@ export default function Home() {
       <div className="overflow-hidden border-y border-ink-200 py-3 bg-ink-900 text-cream-100">
         <div className="ticker-track">
           {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
-            <span key={i} className="flex items-center gap-3 text-xs font-semibold tracking-widest uppercase whitespace-nowrap px-6">
+            <span
+              key={i}
+              className="flex items-center gap-3 text-xs font-semibold tracking-widest uppercase whitespace-nowrap px-6"
+            >
               {item}
-              <span className="text-gold-400" aria-hidden>✦</span>
+              <span className="text-gold-400" aria-hidden>
+                ✦
+              </span>
             </span>
           ))}
         </div>
@@ -78,21 +104,21 @@ export default function Home() {
         {[
           {
             icon: <ShieldCheck size={26} className="text-gold-500" />,
-            tag: '01',
-            title: 'Verificação real',
-            desc: 'Conectado ao sistema de autenticação das marcas parceiras em tempo real.',
+            tag: tx.feature1Tag,
+            title: tx.feature1Title,
+            desc: tx.feature1Desc,
           },
           {
             icon: <Trophy size={26} className="text-gold-500" />,
-            tag: '02',
-            title: 'Badges & conquistas',
-            desc: '12 badges para colecionar conforme você verifica produtos e constrói confiança.',
+            tag: tx.feature2Tag,
+            title: tx.feature2Title,
+            desc: tx.feature2Desc,
           },
           {
             icon: <Users size={26} className="text-gold-500" />,
-            tag: '03',
-            title: 'Comunidade',
-            desc: 'Compartilhe suas verificações, inspire outras pessoas e proteja o mercado.',
+            tag: tx.feature3Tag,
+            title: tx.feature3Title,
+            desc: tx.feature3Desc,
           },
         ].map((f) => (
           <div key={f.title} className="card-hover group">
@@ -113,18 +139,18 @@ export default function Home() {
       {/* Bottom CTA band */}
       <section className="bg-ink-900 py-16 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <p className="section-label text-cream-300 mb-4">Pronto para começar?</p>
+          <p className="section-label text-cream-300 mb-4">{tx.bandEyebrow}</p>
           <h2 className="font-serif font-black text-4xl md:text-5xl text-cream-100 mb-8 leading-tight">
-            Verifique seu próximo produto <em>agora</em>
+            {tx.bandHeadline}
           </h2>
           <button
-            onClick={() => nav('/verificar')}
+            onClick={() => nav("/verificar")}
             className="inline-flex items-center gap-2 bg-cream-100 text-ink-900 font-semibold px-8 py-3.5 rounded-full hover:bg-cream-200 transition-colors"
           >
-            <Zap size={16} className="text-gold-500" /> Verificar autenticidade agora
+            <Zap size={16} className="text-gold-500" /> {tx.bandCta}
           </button>
         </div>
       </section>
     </div>
-  )
+  );
 }

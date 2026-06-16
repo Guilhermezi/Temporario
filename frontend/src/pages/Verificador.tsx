@@ -1,3 +1,4 @@
+// ── pages/Verificador.tsx
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { api, assetUrl, type Product, type VerifyResult } from "../lib/api";
 import { useAuth } from "../hooks/useAuth";
+import { useI18n } from "../hooks/useI18n";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -20,6 +22,8 @@ export default function Verificador() {
   const { user } = useAuth();
   const nav = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+  const { t } = useI18n();
+  const tx = t("verificador");
 
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
@@ -35,15 +39,15 @@ export default function Verificador() {
     api.products
       .list()
       .then(setProducts)
-      .catch((e: Error) => console.error("[Verificador] erro ao carregar produtos:", e.message))
+      .catch((e: Error) => console.error("[Verificador] erro:", e.message))
       .finally(() => setProductsLoading(false));
   }, []);
 
   const onPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (!ALLOWED_TYPES.includes(f.type)) { setErr("Formato não suportado. Use JPG, PNG ou WEBP."); return; }
-    if (f.size > MAX_FILE_SIZE) { setErr("A imagem deve ter no máximo 10 MB."); return; }
+    if (!ALLOWED_TYPES.includes(f.type)) { setErr(tx.errorFormat); return; }
+    if (f.size > MAX_FILE_SIZE) { setErr(tx.errorSize); return; }
     setErr(""); setPhoto(f); setPreview(URL.createObjectURL(f)); setResult(null);
   };
 
@@ -54,8 +58,8 @@ export default function Verificador() {
 
   const verify = async () => {
     if (!user) { nav("/login"); return; }
-    if (!photo) { setErr("Selecione uma foto do produto."); return; }
-    if (!selectedProduct) { setErr("Selecione o produto."); return; }
+    if (!photo) { setErr(tx.errorPhoto); return; }
+    if (!selectedProduct) { setErr(tx.errorProduct); return; }
     setErr(""); setLoading(true); setResult(null);
     try {
       const form = new FormData();
@@ -69,7 +73,7 @@ export default function Verificador() {
       const msg = e instanceof Error ? e.message : "Erro desconhecido";
       setErr(
         msg === "Você já verificou este produto com este código serial"
-          ? "Você já verificou este produto com este serial. Tente um código diferente."
+          ? tx.errorDuplicate
           : msg
       );
     } finally {
@@ -79,37 +83,32 @@ export default function Verificador() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-28 pb-20 fade-up">
-      {/* Header */}
       <div className="text-center mb-12">
-        <p className="section-label mb-3">Autenticidade em tempo real</p>
-        <h1 className="font-serif font-black text-5xl text-ink-900 mb-4">
-          Verificar produto
-        </h1>
-        <p className="text-ink-500 max-w-sm mx-auto leading-relaxed">
-          Tire uma foto, escolha o produto e confirme a autenticidade em segundos.
-        </p>
+        <p className="section-label mb-3">{tx.eyebrow}</p>
+        <h1 className="font-serif font-black text-5xl text-ink-900 mb-4">{tx.title}</h1>
+        <p className="text-ink-500 max-w-sm mx-auto leading-relaxed">{tx.subtitle}</p>
         {!user && (
           <p className="mt-4 text-sm text-gold-600 bg-gold-500/10 border border-gold-500/20 rounded-xl px-4 py-3 inline-block">
             <button onClick={() => nav("/login")} className="underline font-semibold">
-              Entre na sua conta
+              {tx.loginPromptPre}
             </button>{" "}
-            para verificar e receber selos.
+            {tx.loginPromptPost}
           </p>
         )}
       </div>
 
       <div className="card space-y-6">
-        {/* Upload de foto */}
+        {/* Upload */}
         <div>
-          <label className="label">Foto do produto *</label>
+          <label className="label">{tx.photoLabel}</label>
           {!preview ? (
             <button
               onClick={() => fileRef.current?.click()}
               className="w-full h-52 border-2 border-dashed border-ink-300 rounded-xl flex flex-col items-center justify-center gap-3 text-ink-400 hover:border-ink-600 hover:text-ink-700 transition-all duration-150 bg-cream-100/50 group"
             >
               <Camera size={32} className="group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-medium">Clique para selecionar uma foto</span>
-              <span className="text-xs text-ink-300">JPG, PNG ou WEBP · máx. 10 MB</span>
+              <span className="text-sm font-medium">{tx.photoPlaceholder}</span>
+              <span className="text-xs text-ink-300">{tx.photoHint}</span>
             </button>
           ) : (
             <div className="relative rounded-xl overflow-hidden">
@@ -122,15 +121,21 @@ export default function Verificador() {
               </button>
             </div>
           )}
-          <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onPhoto} />
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={onPhoto}
+          />
         </div>
 
         {/* Produto */}
         <div>
-          <label className="label">Produto *</label>
+          <label className="label">{tx.productLabel}</label>
           {productsLoading ? (
             <div className="input flex items-center gap-2 text-ink-400">
-              <Loader2 size={14} className="animate-spin" /> Carregando produtos…
+              <Loader2 size={14} className="animate-spin" /> {tx.productsLoading}
             </div>
           ) : (
             <select
@@ -138,7 +143,7 @@ export default function Verificador() {
               onChange={(e) => setSelectedProduct(e.target.value)}
               className="input appearance-none cursor-pointer"
             >
-              <option value="">Selecione o produto...</option>
+              <option value="">{tx.productPlaceholder}</option>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.brand.name} — {p.name}
@@ -151,12 +156,12 @@ export default function Verificador() {
         {/* Serial */}
         <div>
           <label className="label">
-            Código serial{" "}
-            <span className="text-ink-400 normal-case font-normal">(opcional)</span>
+            {tx.serialLabel}{" "}
+            <span className="text-ink-400 normal-case font-normal">{tx.serialOptional}</span>
           </label>
           <input
             className="input"
-            placeholder="Ex.: ABC12345"
+            placeholder={tx.serialPlaceholder}
             value={serial}
             onChange={(e) => setSerial(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && verify()}
@@ -175,9 +180,9 @@ export default function Verificador() {
           className="btn-primary w-full justify-center py-3.5 text-base"
         >
           {loading ? (
-            <><Loader2 size={18} className="animate-spin" /> Verificando…</>
+            <><Loader2 size={18} className="animate-spin" /> {tx.btnVerifying}</>
           ) : (
-            <><Upload size={18} /> Verificar autenticidade</>
+            <><Upload size={18} /> {tx.btnVerify}</>
           )}
         </button>
       </div>
@@ -198,8 +203,12 @@ export default function Verificador() {
               <XCircle size={36} className="text-red-600 shrink-0 mt-0.5" />
             )}
             <div>
-              <div className={`font-serif font-black text-2xl ${result.authentic ? "text-emerald-800" : "text-red-800"}`}>
-                {result.authentic ? "Produto Original ✓" : "Produto Suspeito ✗"}
+              <div
+                className={`font-serif font-black text-2xl ${
+                  result.authentic ? "text-emerald-800" : "text-red-800"
+                }`}
+              >
+                {result.authentic ? tx.resultAuthentic : tx.resultSuspect}
               </div>
               <div className="text-ink-700 text-sm mt-1 leading-relaxed">{result.message}</div>
             </div>
@@ -215,20 +224,21 @@ export default function Verificador() {
               />
               <div className="flex gap-2 flex-wrap">
                 <a href={result.seal.shareableUrl} target="_blank" rel="noreferrer" className="btn-ghost text-sm py-2">
-                  Ver página do selo
+                  {tx.sealPage}
                 </a>
                 <a
                   href={`https://twitter.com/intent/tweet?text=Acabei de verificar meu produto com @byTrust! ✅&url=${result.seal.shareableUrl}`}
-                  target="_blank" rel="noreferrer"
+                  target="_blank"
+                  rel="noreferrer"
                   className="btn-ghost text-sm py-2"
                 >
-                  <Share2 size={14} /> Compartilhar
+                  <Share2 size={14} /> {tx.share}
                 </a>
                 <button
                   onClick={() => navigator.clipboard.writeText(result.seal!.shareableUrl)}
                   className="btn-ghost text-sm py-2"
                 >
-                  Copiar link
+                  {tx.copyLink}
                 </button>
               </div>
             </>
@@ -237,7 +247,7 @@ export default function Verificador() {
           {result.newBadges.length > 0 && (
             <div className="mt-5 p-4 bg-gold-500/10 border border-gold-500/20 rounded-xl">
               <div className="flex items-center gap-2 font-semibold text-gold-600 mb-3">
-                <Trophy size={18} /> Nova conquista desbloqueada!
+                <Trophy size={18} /> {tx.newBadge}
               </div>
               <div className="flex gap-3 flex-wrap">
                 {result.newBadges.map((b) => (
