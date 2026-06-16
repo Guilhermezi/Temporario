@@ -1,4 +1,4 @@
-// ── translations.ts
+// ──lib/translations.ts
 // Todas as strings da UI organizadas por página/componente.
 // Adicione novos idiomas duplicando um bloco e traduzindo os valores.
 
@@ -246,6 +246,8 @@ export const translations = {
       verified: "verificado",
       readArticle: "Ler matéria",
       publishedAt: "Publicado em",
+      newsLabel: "Notícias",
+      newsDefaultTitle: "Notícia publicada",
     },
     es: {
       eyebrow: "Comunidad",
@@ -259,6 +261,8 @@ export const translations = {
       verified: "verificado",
       readArticle: "Leer artículo",
       publishedAt: "Publicado el",
+      newsLabel: "Noticias",
+      newsDefaultTitle: "Noticia publicada",
     },
     en: {
       eyebrow: "Community",
@@ -272,6 +276,8 @@ export const translations = {
       verified: "verified",
       readArticle: "Read article",
       publishedAt: "Published on",
+      newsLabel: "News",
+      newsDefaultTitle: "Published news",
     },
   },
 
@@ -486,30 +492,12 @@ export const translations = {
       subtitle: "Material educativo gratuito para consumidores, lojistas, marcas e desenvolvedores.",
       downloadBtn: "Baixar PDF",
       items: [
-        {
-          t: "10 sinais de um produto falso",
-          d: "Guia rápido com checklist visual para identificar falsificações no ato da compra.",
-        },
-        {
-          t: "Qual o problema da falsificação?",
-          d: "Impactos econômicos, riscos à saúde e consequências para consumidores e marcas.",
-        },
-        {
-          t: "Cartilha do consumidor consciente",
-          d: "Como comprar online com segurança e usar a API byTrust no dia a dia.",
-        },
-        {
-          t: "Onde a falsificação está presente?",
-          d: "Setores mais afetados pela pirataria e como a falsificação se infiltra em diferentes mercados.",
-        },
-        {
-          t: "Falsificações em cosméticos",
-          d: "Como reconhecer perfumes, maquiagens e dermocosméticos piratas.",
-        },
-        {
-          t: "Porque comprar original?",
-          d: "Os riscos de produtos falsificados e os benefícios de escolher o original.",
-        },
+        { t: "10 sinais de um produto falso", d: "Guia rápido com checklist visual para identificar falsificações no ato da compra." },
+        { t: "Qual o problema da falsificação?", d: "Impactos econômicos, riscos à saúde e consequências para consumidores e marcas." },
+        { t: "Cartilha do consumidor consciente", d: "Como comprar online com segurança e usar a API byTrust no dia a dia." },
+        { t: "Onde a falsificação está presente?", d: "Setores mais afetados pela pirataria e como a falsificação se infiltra em diferentes mercados." },
+        { t: "Falsificações em cosméticos", d: "Como reconhecer perfumes, maquiagens e dermocosméticos piratas." },
+        { t: "Porque comprar original?", d: "Os riscos de produtos falsificados e os benefícios de escolher o original." },
       ],
     },
     es: {
@@ -518,30 +506,12 @@ export const translations = {
       subtitle: "Material educativo gratuito para consumidores, comerciantes, marcas y desarrolladores.",
       downloadBtn: "Descargar PDF",
       items: [
-        {
-          t: "10 señales de un producto falso",
-          d: "Guía rápida con checklist visual para identificar falsificaciones en el acto de compra.",
-        },
-        {
-          t: "¿Cuál es el problema de la falsificación?",
-          d: "Impactos económicos, riesgos para la salud y consecuencias para consumidores y marcas.",
-        },
-        {
-          t: "Guía del consumidor consciente",
-          d: "Cómo comprar en línea de forma segura y usar la API byTrust en el día a día.",
-        },
-        {
-          t: "¿Dónde está presente la falsificación?",
-          d: "Sectores más afectados por la piratería y cómo la falsificación se infiltra en diferentes mercados.",
-        },
-        {
-          t: "Falsificaciones en cosméticos",
-          d: "Cómo reconocer perfumes, maquillajes y dermocosméticos piratas.",
-        },
-        {
-          t: "¿Por qué comprar original?",
-          d: "Los riesgos de los productos falsificados y los beneficios de elegir el original.",
-        },
+        { t: "10 señales de un producto falso", d: "Guía rápida con checklist visual para identificar falsificaciones en el acto de compra." },
+        { t: "¿Cuál es el problema de la falsificación?", d: "Impactos económicos, riesgos para la salud y consecuencias para consumidores y marcas." },
+        { t: "Guía del consumidor consciente", d: "Cómo comprar en línea de forma segura y usar la API byTrust en el día a día." },
+        { t: "¿Dónde está presente la falsificación?", d: "Sectores más afectados por la piratería y cómo la falsificación se infiltra en diferentes mercados." },
+        { t: "Falsificaciones en cosméticos", d: "Cómo reconocer perfumes, maquillajes y dermocosméticos piratas." },
+        { t: "¿Por qué comprar original?", d: "Los riesgos de los productos falsificados y los beneficios de elegir el original." },
       ],
     },
     en: {
@@ -550,30 +520,12 @@ export const translations = {
       subtitle: "Free educational material for consumers, retailers, brands and developers.",
       downloadBtn: "Download PDF",
       items: [
-        {
-          t: "10 signs of a fake product",
-          d: "Quick guide with visual checklist to identify counterfeits at the point of purchase.",
-        },
-        {
-          t: "What's the problem with counterfeiting?",
-          d: "Economic impacts, health risks and consequences for consumers and brands.",
-        },
-        {
-          t: "The conscious consumer's guide",
-          d: "How to shop online safely and use the byTrust API in everyday life.",
-        },
-        {
-          t: "Where is counterfeiting present?",
-          d: "Sectors most affected by piracy and how counterfeiting infiltrates different markets.",
-        },
-        {
-          t: "Counterfeits in cosmetics",
-          d: "How to recognize counterfeit perfumes, make-up and dermocosmetics.",
-        },
-        {
-          t: "Why buy original?",
-          d: "The risks of counterfeit products and the benefits of choosing the original.",
-        },
+        { t: "10 signs of a fake product", d: "Quick guide with visual checklist to identify counterfeits at the point of purchase." },
+        { t: "What's the problem with counterfeiting?", d: "Economic impacts, health risks and consequences for consumers and brands." },
+        { t: "The conscious consumer's guide", d: "How to shop online safely and use the byTrust API in everyday life." },
+        { t: "Where is counterfeiting present?", d: "Sectors most affected by piracy and how counterfeiting infiltrates different markets." },
+        { t: "Counterfeits in cosmetics", d: "How to recognize counterfeit perfumes, make-up and dermocosmetics." },
+        { t: "Why buy original?", d: "The risks of counterfeit products and the benefits of choosing the original." },
       ],
     },
   },

@@ -9,6 +9,13 @@ import { api, type Post } from "../lib/api";
 import { useAuth } from "../hooks/useAuth";
 import { useI18n } from "../hooks/useI18n";
 
+
+// ── Fix: extrai o tipo da prop "tx" sem genérico inline em TSX.
+// ReturnType<ReturnType<typeof useI18n>["t"]<"feed">> causa TS1005
+// porque o compilador interpreta <"feed"> como JSX.
+// Solução: usar o overload sem argumento e tipar como Record<string, string>.
+type FeedTx = Record<string, string>;
+
 function parseNewsPost(content: string) {
   const lines = content.split("\n").map((l) => l.trim()).filter(Boolean);
   const rawTitle = lines.find((l) => l.startsWith("📰")) || "";
@@ -37,7 +44,12 @@ function PostImage({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-function NewsCard({ post, canDelete, onDelete, tx }: { post: Post; canDelete: boolean; onDelete: (id: string) => void; tx: ReturnType<ReturnType<typeof useI18n>["t"]<"feed">> }) {
+function NewsCard({ post, canDelete, onDelete, tx }: {
+  post: Post;
+  canDelete: boolean;
+  onDelete: (id: string) => void;
+  tx: FeedTx;
+}) {
   const news = parseNewsPost(post.content);
   return (
     <div className="card hover:border-ink-300 transition-colors">
@@ -68,10 +80,10 @@ function NewsCard({ post, canDelete, onDelete, tx }: { post: Post; canDelete: bo
       <div className="rounded-2xl border border-ink-200 bg-white/70 p-4">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="inline-flex items-center gap-2 rounded-full border border-gold-500/20 bg-gold-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-600">
-            Notícias
+            {tx.newsLabel}
           </span>
         </div>
-        <h3 className="text-lg font-semibold leading-snug text-ink-900">{news.title || "Notícia publicada"}</h3>
+        <h3 className="text-lg font-semibold leading-snug text-ink-900">{news.title || tx.newsDefaultTitle}</h3>
         {news.description && (
           <p className="mt-3 text-sm leading-6 text-ink-700 whitespace-pre-wrap break-words wrap-anywhere">{news.description}</p>
         )}
@@ -90,7 +102,12 @@ function NewsCard({ post, canDelete, onDelete, tx }: { post: Post; canDelete: bo
   );
 }
 
-function RegularPostCard({ post, canDelete, onDelete, tx }: { post: Post; canDelete: boolean; onDelete: (id: string) => void; tx: ReturnType<ReturnType<typeof useI18n>["t"]<"feed">> }) {
+function RegularPostCard({ post, canDelete, onDelete, tx }: {
+  post: Post;
+  canDelete: boolean;
+  onDelete: (id: string) => void;
+  tx: FeedTx;
+}) {
   return (
     <div className="card hover:border-ink-300 transition-colors">
       <div className="flex items-start justify-between gap-3 mb-4 min-w-0">
