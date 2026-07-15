@@ -18,7 +18,7 @@ O projeto nasce da necessidade de proteger consumidores brasileiros e latino-ame
 
 ## Funcionalidades
 
-- **Verificação de produto** — consulta de autenticidade via código ou QR Code
+- **Verificação de produto** — consulta de autenticidade via código e fotos do produto
 - **Feed de notícias** — publicação automática de alertas e notícias sobre falsificação no Brasil e América Latina, atualizado a cada 6 horas
 - **Denúncias** — canal para reportar produtos suspeitos
 - **Conteúdo educativo** — artigos e guias para identificar falsificações
@@ -85,7 +85,7 @@ O Feed é alimentado automaticamente por um serviço que busca notícias sobre f
 | Parceiro | Contribuição |
 |---|---|
 | **J.A-Brasil (Junior Activist)** | Parceria institucional, mobilização e comunicação com consumidores jovens |
-| **Mercado Livre** | Parceria tecnológica e de dados para verificação de autenticidade de produtos |
+| **Mercado Livre** | Parceria patrocinadora do evento |
 
 ---
 
