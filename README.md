@@ -2,6 +2,8 @@
 
 > Plataforma de verificação de autenticidade de produtos, combate à falsificação e educação do consumidor no Brasil e América Latina.
 
+🔗 **[Acessar o projeto](https://bytrust.vercel.app)**
+
 **Desenvolvido em parceria com [J.A-Brasil (Junior Activist)](https://ja-brasil.org) e [Mercado Livre](https://mercadolivre.com.br).**
 
 ---
@@ -66,63 +68,6 @@ O projeto nasce da necessidade de proteger consumidores brasileiros e latino-ame
 
 ---
 
-## Como rodar localmente
-
-### Pré-requisitos
-
-- Node.js 18+
-- PostgreSQL rodando localmente
-- npm ou yarn
-
-### Backend
-
-```bash
-cd backend
-npm install
-cp .env.example .env
-# Edite .env com sua DATABASE_URL, JWT_SECRET e ADMIN_SECRET
-npx prisma migrate dev
-npm run dev
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-cp .env.example .env
-# Edite .env com a URL do backend
-npm run dev
-```
-
----
-
-## Variáveis de ambiente
-
-### Backend (`.env`)
-
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/bytrust
-JWT_SECRET=seu-segredo-jwt
-ADMIN_SECRET=seu-segredo-admin
-FRONTEND_URL=http://localhost:5173
-NODE_ENV=development
-
-# Ingestão de notícias (opcionais — têm defaults)
-NEWS_MAX_POSTS=5
-NEWS_DAYS_BACK=2
-NEWS_DRY_RUN=false
-```
-
-### Cron Service (Railway)
-
-```env
-BACKEND_URL=https://seu-backend.up.railway.app
-ADMIN_SECRET=mesmo-valor-do-backend
-```
-
----
-
 ## Ingestão automática de notícias
 
 O Feed é alimentado automaticamente por um serviço que busca notícias sobre falsificação e contrafação no Brasil e América Latina via Google News RSS.
@@ -131,40 +76,7 @@ O Feed é alimentado automaticamente por um serviço que busca notícias sobre f
 - **Fonte:** Google News RSS (10 queries específicas)
 - **Filtros:** palavras-chave positivas, termos bloqueados, fontes confiáveis
 - **Deduplicação:** fingerprint SHA-256 por notícia, salvo no banco
-- **Publicação:** posts automáticos no Feed como `@byTrust Notícias` com `isAuto: true`
-
-Para disparar manualmente:
-
-```bash
-curl -X POST https://seu-backend.up.railway.app/api/admin/news-ingest \
-  -H "x-admin-secret: seu-segredo"
-
-# Dry run (não grava nada)
-curl -X POST https://seu-backend.up.railway.app/api/admin/news-ingest?dry_run=true \
-  -H "x-admin-secret: seu-segredo"
-```
-
----
-
-## Deploy
-
-### Backend → Railway
-
-1. Conecte o repositório no Railway
-2. Configure as variáveis de ambiente
-3. O Railway detecta o `package.json` e faz o deploy automaticamente
-
-### Frontend → Vercel
-
-1. Conecte o repositório na Vercel
-2. Configure `VITE_API_URL` apontando para o backend no Railway
-3. Deploy automático a cada push na `main`
-
-### Cron de notícias → Railway Cron Service
-
-1. Crie um novo serviço no Railway com Root Directory `cron-ingest`
-2. Configure `BACKEND_URL` e `ADMIN_SECRET`
-3. Em Settings → Cron Schedule: `0 */6 * * *`
+- **Publicação:** posts automáticos no Feed como `@byTrust Notícias`
 
 ---
 
@@ -174,6 +86,29 @@ curl -X POST https://seu-backend.up.railway.app/api/admin/news-ingest?dry_run=tr
 |---|---|
 | **J.A-Brasil (Junior Activist)** | Parceria institucional, mobilização e comunicação com consumidores jovens |
 | **Mercado Livre** | Parceria tecnológica e de dados para verificação de autenticidade de produtos |
+
+---
+
+## Time
+
+| Nome | GitHub |
+|---|---|
+| Guilherme Izidio Nogueira |  [@Guilhermezi](https://github.com/Guilhermezi) |
+| Luis Guilherme | [@Luis-Guilherme17](https://github.com/Luis-Guilherme17) |
+| Rafael Nunes Cardoso | [@RafaelNunesCard](https://github.com/RafaelNunesCard) |
+| Giulio Freitas | [@GiulioFreitaS](https://github.com/GiulioFreitaS) |
+| Pedro Rodrigues Pimentel | [@pedrorgdss](https://github.com/pedrorgdss) |
+| Mariana Queiroz | [@queirozmariana](https://github.com/queirozmariana) |
+| Renato Aparecido da Silva | [@Renato1909](https://github.com/Renato1909) |
+| Julia Bergstron | [@Juliabergstron](https://github.com/Juliabergstron) |
+
+---
+
+## Contato
+
+Tem interesse no projeto ou quer saber mais? Me chame no LinkedIn:
+
+**👉 [Guilherme Izidio Nogueira](https://www.linkedin.com/in/guilherme-izidio-nogueira-7ab1ab370)**
 
 ---
 
